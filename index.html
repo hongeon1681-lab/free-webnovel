@@ -260,6 +260,7 @@
 <div class="sheet hidden" id="sheet"></div>
 
 <!-- 글 파일(엔딩노벨_자료/stories/*.js)은 2026-11-18에 모두 지우고 처음부터 다시 시작해요. 새 글은 여기에 script로 연결하세요. -->
+<script src="엔딩노벨_자료/stories/execution-1.js"></script>
 <script>
 const TOTAL = 10;
 // 장르 = 네이버 시리즈·카카오페이지 웹소설의 대분류 방식(한 작품에 대표 장르 1개)
@@ -275,13 +276,18 @@ const TAGS = [
   ["성장","",120],["먼치킨","",10],["아카데미","",200],["오피스","",210],["힐링","",110],["피폐","",260],
   ["착각","",60],["GL(백합)","",300]
 ];
-const STATUS = ["전체","연재 중","완결","연재 예정"];
 const G = {};
 [...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
 
 const WORKS = [
+  { id:"execution", open:true, t:"처형인은 공녀를 베지 못했다", main:"판타지", g:["판타지","로판"],
+    k:["피폐","귀족","복수","성장"],
+    w:"12년 동안 단 한 번도 칼을 두 번 내리친 적 없는 왕국 수석 처형인 아벨. 그에게 열흘 뒤 목을 벨 사형수가 배정된다. 한 달 전 그가 직접 아버지와 오빠의 목을 벤 몰락 공작가의 공녀, 이리스. 그녀는 먹지도 울지도 않고 단 하나만 부탁한다. \"두 번은 싫어요. 한 번에 베어 줘요.\"",
+    cast:[["아벨 크로우 (29)","왕국 수석 처형인. '한 번의 아벨'. 사형수의 눈은 보지 않고 목만 본다. 목은 거짓말을 못 하니까."],
+          ["이리스 발렌 (22)","몰락한 발렌 공작가의 공녀. 왕태자 독살 미수로 사형 선고. 열흘 뒤의 처형을 조용히 기다린다."],
+          ["마그다","재의 골목 약재상 겸 장의사. 이 왕도에서 처형인의 손을 아무렇지 않게 잡는 유일한 사람."]] },
   { id:"funeral", t:"제 장례식에 범인이 왔습니다", main:"로판", g:["로판","미스터리"],
-    k:["귀족","추리","계약관계","개그","사이다"], st:"연재 예정",
+    k:["귀족","추리","계약관계","개그","사이다"],
     w:"독살당한 백작가 상속녀 세실리아가 관 속에서 깨어났다. 매장되는 순간 법적으로 죽고, 모든 재산은 범인에게 넘어간다. 남은 시간은 7일장. 그녀는 자기 장례식에 임시 하녀로 숨어들어 범인을 찾는다. 그런데 그녀를 알아본 유일한 사람은, 살인 용의자로 수군거림을 받는 약혼자 공작이다.",
     cast:[["세실리아 로웰 (20)","로웰 백작가 상속녀. 숫자와 장부로 세상을 보는 짠순이. 자기 장례식 꽃값이 시세의 세 배라는 데 가장 먼저 분노했다."],
           ["라이너스 아덴 (26)","아덴 공작이자 세실리아의 약혼자. 냉혈한이라는 소문, 살인 용의자라는 수군거림. 그런데 관 속 모래주머니를 가장 먼저 알아챘다."],
@@ -289,10 +295,10 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = {}; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
-let selGenre = "전체", selStatus = "전체";
+let selGenre = "전체";
 const selTags = new Set();
 
 // ---------- 표지 ----------
@@ -302,7 +308,7 @@ function coverStyle(gs){
 }
 function statusOf(w){ return w.open ? "연재 중" : (w.st || "연재 예정"); }
 function coverHtml(w, badge){
-  const b = badge ? `<span class="badge">${w.open ? "읽기" : statusOf(w)}</span>` : "";
+  const b = badge && w.open ? `<span class="badge">읽기</span>` : "";
   // 표지 파일이 없으면 아래 깔아 둔 색 그라데이션이 그대로 보여요
   const img = w.img ? `linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.8)),url('${w.img}'),` : "";
   const fb = coverStyle(w.g).replace("background:","");
@@ -319,24 +325,22 @@ function renderChips(){
   const g = $("#chipsG"); g.innerHTML = "";
   ["전체", ...MAIN.map(m=>m[0])].forEach(n=>g.appendChild(chip(n, selGenre===n, "tab", ()=>{ selGenre = n; renderAll(); })));
   const k = $("#chipsT"); k.innerHTML = "";
-  STATUS.slice(1).forEach(s=>k.appendChild(chip(s, selStatus===s, "pill st", ()=>{ selStatus = selStatus===s ? "전체" : s; renderAll(); })));
   TAGS.forEach(([n])=>k.appendChild(chip("#"+n, selTags.has(n), "pill", ()=>{ selTags.has(n) ? selTags.delete(n) : selTags.add(n); renderAll(); })));
 }
-function filtering(){ return selGenre!=="전체" || selStatus!=="전체" || selTags.size; }
+function filtering(){ return selGenre!=="전체" || selTags.size; }
 function renderHero(){
   const box = $("#heroBox");
   const w = WORKS.find(x=>x.open) || WORKS[0];
   if (!w || filtering()){ box.innerHTML = ""; return; }
   box.innerHTML = `<div class="hero" style="background-image:url('${w.img}')"><div class="in">
-      <div class="kick">${w.g.join(" · ")} · ${statusOf(w)}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?"첫 화 읽기":"작품 소개 보기"}</button></div></div>`;
+      <div class="kick">${w.g.join(" · ")}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?"첫 화 읽기":"작품 소개 보기"}</button></div></div>`;
   box.firstChild.onclick = ()=>openSheet(w);
 }
 function renderGrid(){
   const tags = [...selTags];
   const list = WORKS.filter(w=>(selGenre==="전체" || w.g.includes(selGenre))
-    && (selStatus==="전체" || statusOf(w)===selStatus)
     && tags.every(x=>(w.k||[]).includes(x)));
-  const label = [selGenre!=="전체"?selGenre:"", selStatus!=="전체"?selStatus:"", ...tags.map(x=>"#"+x)].filter(Boolean).join(" · ");
+  const label = [selGenre!=="전체"?selGenre:"", ...tags.map(x=>"#"+x)].filter(Boolean).join(" · ");
   $("#listTitle").textContent = label ? `${label} (${list.length})` : "전체 작품";
   $("#resetBtn").classList.toggle("hidden", !filtering());
   const grid = $("#grid"); grid.innerHTML = "";
@@ -352,7 +356,7 @@ function renderGrid(){
   else em.classList.add("hidden");
 }
 function renderAll(){ renderChips(); renderHero(); renderGrid(); }
-$("#resetBtn").onclick = ()=>{ selGenre = "전체"; selStatus = "전체"; selTags.clear(); renderAll(); };
+$("#resetBtn").onclick = ()=>{ selGenre = "전체"; selTags.clear(); renderAll(); };
 
 // 장르 줄: 마우스로 끌어서 좌우로 넘기기 + 휠로 넘기기 (노트북용)
 ["#chipsG", "#chipsT"].forEach(sl=>{
@@ -379,7 +383,7 @@ function openSheet(w){
     ${w.cast ? `<h4>등장인물</h4>` + w.cast.map(c=>`<p style="margin-bottom:8px"><b>${c[0]}</b><br><span class="sub" style="font-size:13.5px">${c[1]}</span></p>`).join("") : ""}
     <h4>AI 안내</h4><p>이 작품은 인공지능의 도움으로 만든 허구예요. 실제 인물·단체·사건과 관계없어요.</p>
     <h4>이렇게 읽어요</h4><p>약 ${TOTAL}화로 끝나는 완결 이야기예요. 처음부터 결말까지 전부 무료로, 머리 식히며 가볍게 읽을 수 있어요.</p>
-    <button class="primary" id="goBtn" ${w.open?"":"disabled"}>${w.open?"1화 읽기":statusOf(w)+"이에요"}</button></div>`;
+    <button class="primary" id="goBtn" ${w.open?"":"disabled"}>${w.open?"1화 읽기":"준비 중이에요"}</button></div>`;
   $("#sheetBg").classList.remove("hidden"); s.classList.remove("hidden");
   $("#xBtn").onclick = closeSheet; $("#sheetBg").onclick = closeSheet;
   if (w.open) $("#goBtn").onclick = ()=>{ closeSheet(); openStory(w.id); };
