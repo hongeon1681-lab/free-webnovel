@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>끝까지 무료 웹소설</title>
+<style>
+  :root{--bg:#0c0d11;--card:#15171d;--card2:#1c1f27;--text:#ecebe6;--sub:#8d909a;--line:#23262f;--gold:#c9a96e;--gold2:#e2c88f;
+        --serif:"Noto Serif KR","Nanum Myeongjo","Batang","Times New Roman",serif;--sans:system-ui,"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;padding:0 0 84px}
+  .pad{padding:0 18px}
+  .hidden{display:none!important}
+  .sub{color:var(--sub);font-size:13px}
+  button{font-family:inherit}
+
+  /* 상단: 장르 탭 */
+  .top{position:sticky;top:0;z-index:6;background:rgba(12,13,17,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .tabs,.tags2{scrollbar-width:thin;scrollbar-color:#4a4d57 transparent;cursor:grab}
+  .tabs.drag,.tags2.drag{cursor:grabbing}
+  .tabs::-webkit-scrollbar,.tags2::-webkit-scrollbar{height:6px}
+  .tabs::-webkit-scrollbar-thumb,.tags2::-webkit-scrollbar-thumb{background:#4a4d57;border-radius:3px}
+  .tabs::-webkit-scrollbar-thumb:hover,.tags2::-webkit-scrollbar-thumb:hover{background:#6b6f7c}
+  .tabs{display:flex;gap:22px;overflow-x:auto;padding:0 18px}
+  .tab{flex:0 0 auto;padding:15px 0 12px;font-size:15px;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;user-select:none}
+  .tab.on{color:var(--text);font-weight:700;border-bottom-color:var(--gold)}
+  .tags2{display:flex;gap:7px;overflow-x:auto;padding:0 18px 12px}
+  .pill{flex:0 0 auto;font-size:12.5px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap;user-select:none}
+  .pill.on{color:#15120a;background:var(--gold);border-color:var(--gold);font-weight:700}
+
+  /* 대표 작품 */
+  .hero{position:relative;margin:0;aspect-ratio:4/5;max-height:560px;overflow:hidden;cursor:pointer;background-size:cover;background-position:center}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,13,17,0) 35%,rgba(12,13,17,.72) 70%,var(--bg))}
+  .hero .in{position:absolute;left:18px;right:18px;bottom:20px;z-index:1}
+  .hero .kick{font-size:12px;letter-spacing:2px;color:var(--gold2);margin-bottom:6px}
+  .hero h2{font-family:var(--serif);font-size:30px;line-height:1.25;margin:0 0 8px;letter-spacing:-.5px}
+  .hero p{margin:0 0 14px;color:#cfcfc9;font-size:14px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .btn{display:inline-block;background:var(--gold);color:#15120a;border:none;border-radius:999px;padding:11px 24px;font-size:14.5px;font-weight:800;cursor:pointer}
+
+  /* 목록 */
+  .sech{display:flex;justify-content:space-between;align-items:baseline;margin:26px 18px 12px}
+  .sech h3{margin:0;font-size:17px;font-weight:700;letter-spacing:-.3px}
+  .reset{background:none;border:none;color:var(--gold);font-size:13px;cursor:pointer;padding:0}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 11px;padding:0 18px}
+  .work{cursor:pointer}
+  .work:active{opacity:.8}
+  .cover{position:relative;aspect-ratio:3/4;border-radius:7px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:9px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .cover.ph{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 6px 18px rgba(0,0,0,.4)}
+  .cover .ti{font-family:var(--serif);font-weight:700;font-size:14px;line-height:1.3;letter-spacing:-.3px;position:relative;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+  .cover.img{background-size:cover;background-position:center}
+  .badge{position:absolute;top:7px;left:7px;font-size:10px;font-weight:700;color:#15120a;background:var(--gold);border-radius:4px;padding:1px 6px}
+  .meta{padding:8px 1px 0}
+  .meta .g{font-size:11.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta .s{font-size:11px;color:#5d606a;margin-top:1px}
+  .empty{text-align:center;color:var(--sub);padding:60px 10px;font-size:14px}
+
+  /* 작품 상세 */
+  .sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:10}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:11;max-width:520px;margin:0 auto;background:var(--card);border-radius:22px 22px 0 0;padding:0 0 26px;max-height:90vh;overflow:auto;border:1px solid var(--line);border-bottom:none}
+  .sheet .cover{border-radius:0;aspect-ratio:16/10;box-shadow:none;padding:18px}
+  .sheet .cover .ti{font-size:24px}
+  .sheet .body{padding:16px 20px 0}
+  .sheet h4{margin:18px 0 5px;font-size:12px;letter-spacing:1.5px;color:var(--gold)}
+  .sheet p{margin:0;font-size:14.5px;color:#d6d5cf}
+  .sheet .tg{display:flex;gap:6px;flex-wrap:wrap}
+  .sheet .tg span{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:1px 10px}
+  .primary{width:100%;margin-top:22px;padding:15px;border-radius:12px;border:none;background:var(--gold);color:#15120a;font-size:16px;font-weight:800;cursor:pointer}
+  .primary:disabled{background:var(--card2);color:var(--sub);cursor:default}
+  .close{position:absolute;right:12px;top:10px;z-index:2;background:rgba(0,0,0,.45);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer}
+
+  /* 읽기 */
+  .rbar{position:sticky;top:0;z-index:6;background:rgba(12,13,17,.94);backdrop-filter:blur(10px);display:flex;align-items:center;gap:6px;padding:10px 12px}
+  .rbar .t{flex:1;text-align:center;font-size:14px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ib{background:none;border:none;color:var(--text);font-size:15px;padding:6px 9px;cursor:pointer;border-radius:8px}
+  .ib:active{background:var(--card2)}
+  .bar{height:2px;background:var(--line)}
+  .bar i{display:block;height:100%;background:var(--gold);transition:width .4s}
+  .chap{padding:34px 22px 0}
+  .ch-no{font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:8px}
+  .ch-title{font-family:var(--serif);font-size:25px;margin:0 0 6px;letter-spacing:-.5px;line-height:1.35}
+  .by{font-size:12.5px;color:var(--sub);margin-bottom:26px}
+  .text p{margin:0 0 18px;font-size:var(--fs,17px);line-height:2;word-break:keep-all;color:#e4e3dd}
+  body.serif .text p{font-family:var(--serif)}
+  .text .sep{text-align:center;color:var(--gold);letter-spacing:14px;margin:32px 0;font-size:11px;opacity:.7}
+  .endrule{border:0;border-top:1px solid var(--line);margin:34px 0 0}
+  .choices{padding:26px 18px 0;display:grid;gap:10px}
+  .choices h3{font-family:var(--serif);font-size:17px;margin:0 0 4px;font-weight:700}
+  .choice{display:flex;gap:12px;align-items:flex-start;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:15px;text-align:left;font-size:15px;cursor:pointer;line-height:1.55}
+  .choice:hover,.choice:active{border-color:var(--gold)}
+  .choice b{flex:0 0 22px;height:22px;border-radius:50%;background:var(--card2);color:var(--gold);font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .ghost{background:none;color:var(--sub);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;cursor:pointer;width:100%}
+  .hint{font-size:12px;color:var(--sub);text-align:center}
+  .stub{margin:26px 18px 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 18px;display:grid;gap:12px;text-align:center}
+  .stub .q{font-family:var(--serif);font-size:15px;color:var(--gold2)}
+
+  /* 만들기 */
+  .ph1{padding:26px 18px 4px}
+  .ph1 h1{font-family:var(--serif);font-size:25px;margin:0 0 6px;letter-spacing:-.5px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 18px 0}
+  .step h3{margin:0 0 2px;font-size:15px}
+  .step .sub{margin-bottom:10px}
+  textarea,.inp{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;font-size:15px;resize:vertical}
+  textarea:focus,.inp:focus{outline:none;border-color:var(--gold)}
+  textarea{min-height:130px;line-height:1.7}
+  .wrap{display:flex;flex-wrap:wrap;gap:7px}
+  .ex{font-size:12.5px;color:var(--gold);cursor:pointer;margin-top:8px;display:inline-block}
+  .draft{background:var(--card2);border-radius:12px;padding:14px;margin:12px 18px 0;font-size:14px}
+  .draft b{color:var(--gold2)}
+  .draft p{margin:8px 0 0}
+  .ok{color:var(--gold);font-size:12.5px}
+  .mk{padding:0 18px}
+
+  .seg{display:flex;margin:16px 18px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
+  .seg span{flex:1;text-align:center;padding:10px 0;font-size:14px;color:var(--sub);border-radius:9px;cursor:pointer;user-select:none}
+  .seg span.on{background:var(--gold);color:#15120a;font-weight:800}
+  .chapbox select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit;font-size:13.5px;margin-top:6px}
+  .chapbox .row{display:grid;grid-template-columns:1fr;gap:4px;margin-top:8px}
+
+  /* 하단 메뉴 */
+  nav{position:fixed;left:0;right:0;bottom:0;background:rgba(12,13,17,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:5}
+  nav div{max-width:520px;margin:0 auto;display:flex}
+  nav span{flex:1;text-align:center;padding:9px 0 11px;font-size:11px;color:var(--sub);cursor:pointer}
+  nav span.on{color:var(--gold)}
+  nav svg{display:block;margin:0 auto 3px;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  /* 심사 대비: 설정·약관·신고·AI 표시 */
+  .aibadge{margin:10px 18px 0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:12px;color:var(--sub);line-height:1.5}
+  .aibadge b{color:var(--gold2)}
+  .srow{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px}
+  .srow:active{background:var(--card)}
+  .srow small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
+  .srow .go{color:var(--sub);font-size:18px}
+  .srow.danger{color:#e58a8a}
+  .panel{padding-top:46px!important}
+  .panel h3{margin:0 0 6px;font-size:18px}
+  .panel h5{margin:18px 0 4px;font-size:14px;color:var(--gold2)}
+  .panel p,.panel li{font-size:13.5px;color:#cfcec8;line-height:1.7;margin:0 0 6px}
+  .panel ul{margin:0 0 6px;padding-left:18px}
+  .panel .note{font-size:12px;color:var(--sub);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin:12px 0}
+  .rsn{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px}
+  .rsn input{margin-top:4px;accent-color:#c9a96e}
+  .agree{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin:10px 0;cursor:pointer}
+  .agree input{margin-top:4px;accent-color:#c9a96e}
+  .linkbtn{background:none;border:none;color:var(--gold2);text-decoration:underline;font-size:inherit;cursor:pointer;padding:0}
+  .pill.st{border-style:dashed}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- 홈 -->
+<section id="homeView">
+  <div class="top">
+    <div class="tabs" id="chipsG"></div>
+    <div class="tags2" id="chipsT"></div>
+  </div>
+  <div id="heroBox"></div>
+  <div class="sech"><h3 id="listTitle">전체 작품</h3><button class="reset hidden" id="resetBtn">선택 초기화</button></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty hidden" id="empty"></div>
+</section>
+
+<!-- 읽기 -->
+<section id="readView" class="hidden">
+  <div class="rbar">
+    <button class="ib" id="backBtn">←</button>
+    <div class="t" id="workTitle"></div>
+    <button class="ib" id="rptBtn" title="신고하기" aria-label="신고하기">⚑ 신고</button>
+    <button class="ib" id="fMinus">가−</button><button class="ib" id="fPlus">가+</button><button class="ib" id="fSerif">명조</button>
+  </div>
+  <div class="bar"><i id="barFill"></i></div>
+  <div class="aibadge"><b>✦ AI가 쓴 이야기</b> · 이 글은 인공지능이 만든 허구예요. 실제 인물·사건과 관계없어요. 불편한 내용은 위의 "⚑ 신고"로 알려 주세요.</div>
+  <div id="chapters"></div>
+  <div class="choices hidden" id="choiceBox">
+    <h3>다음 장면, 어디로 갈까요?</h3>
+    <div id="choiceList" style="display:grid;gap:10px"></div>
+    <div class="hint">다른 길이 궁금하면 언제든 돌아와서 다시 고를 수 있어요.</div>
+    <button class="ghost hidden" id="rewindBtn">↩ 직전 선택을 취소하고 다른 길 가 보기</button>
+  </div>
+  <div class="stub hidden" id="stub"></div>
+</section>
+
+<!-- 만들기 -->
+<section id="createView" class="hidden">
+  <div class="ph1">
+    <h1>내 웹소설 만들기</h1>
+    <div class="sub">머릿속 그림을 편하게 적기만 하면 돼요. 문장이 아니어도 괜찮아요. 제목, 세계관, 인물, 이야기, 표지는 AI가 정리해 줘요. 선정적인 표현은 만들 수 없어요.</div>
+  </div>
+
+  <div class="seg" id="seg"><span class="on" data-m="ai">AI와 함께 만들기</span><span data-m="manual">직접 쓰기</span></div>
+
+  <div id="aiMode">
+  <div class="step">
+    <h3>① 상상하는 걸 막 적어 주세요</h3>
+    <div class="sub">장면, 인물, 분위기, 하고 싶은 반전… 뭐든 좋아요.</div>
+    <textarea id="cIdea" placeholder="예) 비가 오면 사람이 되는 인어랑 우산 가게 주인. 장마 열흘 동안만 같이 있을 수 있어서, 마지막 날이 슬펐으면 좋겠어요."></textarea>
+    <span class="ex" id="cEx">예시 넣어 보기</span>
+  </div>
+  <div class="step"><h3>② 장르 <span class="sub">(최대 3개, 안 골라도 돼요)</span></h3><div class="wrap" id="cGenre"></div></div>
+  <div class="step"><h3>③ 얼마나 길게?</h3><div class="wrap" id="cLen"></div></div>
+  <div class="step"><h3>④ 결말은 어떤 느낌으로?</h3><div class="wrap" id="cEnd"></div></div>
+  <div class="step"><h3>⑤ 제목 <span class="sub">(비워 두면 AI가 3개 제안해요)</span></h3><input class="inp" id="cTitle" placeholder="제목이 정해져 있으면 적어 주세요"></div>
+
+  <div class="mk"><button class="primary" id="cMake">기획서 만들기</button></div>
+  <div id="cResult"></div>
+  </div>
+
+  <div id="manualMode" class="hidden">
+    <div class="step">
+      <h3>작품 정보</h3>
+      <input class="inp" id="mTitle" placeholder="제목" style="margin-bottom:8px">
+      <textarea id="mIntro" placeholder="세계관·한 줄 소개" style="min-height:70px"></textarea>
+      <div class="sub" style="margin:10px 0 6px">장르 (최대 3개)</div>
+      <div class="wrap" id="mGenre"></div>
+    </div>
+    <div id="mChaps"></div>
+    <div class="step">
+      <h3>공개 범위</h3>
+      <label class="rsn"><input type="radio" name="vis" checked><span><b>🔒 나만 보기</b> (기본)<br><span class="sub">이 기기에만 저장돼요. 아무에게도 안 보여요.</span></span></label>
+      <label class="rsn" style="opacity:.55"><input type="radio" name="vis" disabled><span><b>🌐 모두에게 공개</b> · 준비 중<br><span class="sub">공개하려면 자동 검사와 신고·검수 체계가 먼저 필요해서, 정식 출시 뒤에 열어요.</span></span></label>
+    </div>
+    <div class="mk" style="display:grid;gap:8px;margin-top:12px">
+      <button class="ghost" id="mAdd">+ 화 추가</button>
+      <button class="primary" id="mSave" style="margin-top:0">저장하고 읽어 보기</button>
+    </div>
+    <div class="sub" style="padding:8px 18px 0">글은 줄바꿈으로 문단이 나뉘고, ◇ 만 적은 줄은 장면 전환 표시가 돼요. 선택지를 비워 두면 그 화가 마지막 화예요. 이 기기에 저장돼요.</div>
+  </div>
+
+  <div class="sech"><h3>내가 만든 작품</h3></div>
+  <div id="cMine" class="sub" style="padding:0 18px">아직 없어요.</div>
+  <div class="aibadge" style="margin-top:18px"><b>내가 만든 작품은 이 기기에만 저장돼요.</b> 다른 사람에게 공개되지 않아요. 선정적·폭력적·혐오적인 내용, 미성년자가 나오는 성적 내용, 실존 인물을 해치는 내용은 쓸 수 없어요. (<button class="linkbtn" data-doc="content">콘텐츠 정책</button>)</div>
+</section>
+
+<!-- 내 정보 -->
+<section id="settingsView" class="hidden">
+  <div class="sech"><h3>내 정보</h3></div>
+  <div class="aibadge" style="margin:0 18px 8px"><b>끝까지 무료 웹소설</b> · 전체 이용가 · 만 14세 이상 · 글은 AI의 도움으로 쓴 허구예요.</div>
+  <div class="srow" data-doc="ai"><div>AI 이용 안내<small>AI가 어떻게 글을 만드는지, 한계는 뭔지</small></div><span class="go">›</span></div>
+  <div class="srow" data-doc="content"><div>콘텐츠 정책<small>어떤 내용은 다루지 않는지</small></div><span class="go">›</span></div>
+  <div class="srow" data-doc="terms"><div>이용약관</div><span class="go">›</span></div>
+  <div class="srow" data-doc="privacy"><div>개인정보 처리방침</div><span class="go">›</span></div>
+  <div class="srow" data-doc="ads"><div>광고 안내</div><span class="go">›</span></div>
+  <div class="srow" data-doc="contact"><div>문의하기<small>오류·불편·삭제 요청</small></div><span class="go">›</span></div>
+  <div class="srow" data-doc="report"><div>신고 내역 보기<small>이 기기에서 보낸 신고</small></div><span class="go">›</span></div>
+  <div class="srow danger" id="wipeRow"><div>내 기록 모두 삭제<small>읽기 설정, 신고 내역, 동의 기록을 지워요</small></div><span class="go">›</span></div>
+  <div class="sub" style="padding:18px">버전 0.1 (웹 시안)</div>
+</section>
+
+</div>
+
+<nav id="tabs"><div>
+  <span class="on" data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>홈</span>
+  <!-- 만들기 탭은 첫 출시에서 숨겼어요 (코드는 남겨 둠). 되살리려면 이 주석을 풀기:
+  <span data-tab="create"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>만들기</span>
+  -->
+  <span data-tab="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>내 정보</span>
+</div></nav>
+
+<div class="sheetbg hidden" id="sheetBg"></div>
+<div class="sheet hidden" id="sheet"></div>
+
+<!-- 글 파일(엔딩노벨_자료/stories/*.js)은 2026-11-18에 모두 지우고 처음부터 다시 시작해요. 새 글은 여기에 script로 연결하세요. -->
+<script>
+const TOTAL = 10;
+// 장르 = 네이버 시리즈·카카오페이지 웹소설의 대분류 방식(한 작품에 대표 장르 1개)
+// [이름, 표시용(안 씀), 표지 대체 색상]
+const MAIN = [
+  ["로맨스","",335],["로판","",315],["판타지","",265],["현판","",215],["무협","",20],
+  ["미스터리","",230],["드라마","",30],["라이트노벨","",280],["BL","",225]
+];
+// 키워드 = 플랫폼 해시태그 방식(여러 개 골라 좁히기)
+const TAGS = [
+  ["회귀","",160],["빙의","",290],["환생","",345],["귀족","",40],["궁중","",30],["계약관계","",320],
+  ["정략결혼","",330],["추리","",230],["복수","",0],["사이다","",50],["개그","",45],["달달","",340],
+  ["성장","",120],["먼치킨","",10],["아카데미","",200],["오피스","",210],["힐링","",110],["피폐","",260],
+  ["착각","",60],["GL(백합)","",300]
+];
+const STATUS = ["전체","연재 중","완결","연재 예정"];
+const G = {};
+[...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
+
+const WORKS = [
+  { id:"funeral", t:"제 장례식에 범인이 왔습니다", main:"로판", g:["로판","미스터리"],
+    k:["귀족","추리","계약관계","개그","사이다"], st:"연재 예정",
+    w:"독살당한 백작가 상속녀 세실리아가 관 속에서 깨어났다. 매장되는 순간 법적으로 죽고, 모든 재산은 범인에게 넘어간다. 남은 시간은 7일장. 그녀는 자기 장례식에 임시 하녀로 숨어들어 범인을 찾는다. 그런데 그녀를 알아본 유일한 사람은, 살인 용의자로 수군거림을 받는 약혼자 공작이다.",
+    cast:[["세실리아 로웰 (20)","로웰 백작가 상속녀. 숫자와 장부로 세상을 보는 짠순이. 자기 장례식 꽃값이 시세의 세 배라는 데 가장 먼저 분노했다."],
+          ["라이너스 아덴 (26)","아덴 공작이자 세실리아의 약혼자. 냉혈한이라는 소문, 살인 용의자라는 수군거림. 그런데 관 속 모래주머니를 가장 먼저 알아챘다."],
+          ["베르텔 하임 (58)","로웰가 35년 차 집사. 세실리아에게 글씨와 장부를 가르쳤고, 장례식에서 가장 서럽게 운다."]] }
+];
+
+window.CH = window.CH || {};
+const STORIES = {}; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+
+const $ = s => document.querySelector(s);
+let selGenre = "전체", selStatus = "전체";
+const selTags = new Set();
+
+// ---------- 표지 ----------
+function coverStyle(gs){
+  const h1 = G[gs[0]].hue, h2 = G[gs[1]||gs[0]].hue;
+  return `background:linear-gradient(160deg,hsl(${h1} 38% 26%),hsl(${h2} 34% 13%) 70%,#0b0c10)`;
+}
+function statusOf(w){ return w.open ? "연재 중" : (w.st || "연재 예정"); }
+function coverHtml(w, badge){
+  const b = badge ? `<span class="badge">${w.open ? "읽기" : statusOf(w)}</span>` : "";
+  // 표지 파일이 없으면 아래 깔아 둔 색 그라데이션이 그대로 보여요
+  const img = w.img ? `linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.8)),url('${w.img}'),` : "";
+  const fb = coverStyle(w.g).replace("background:","");
+  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center">${b}<div class="ti">${w.t}</div></div>`;
+}
+WORKS.forEach(w=>{ w.img = "엔딩노벨_자료/covers/" + w.id + ".png"; });
+
+// ---------- 홈 ----------
+function chip(text, on, cls, fn){
+  const c = document.createElement("span");
+  c.className = cls + (on ? " on" : ""); c.textContent = text; c.onclick = fn; return c;
+}
+function renderChips(){
+  const g = $("#chipsG"); g.innerHTML = "";
+  ["전체", ...MAIN.map(m=>m[0])].forEach(n=>g.appendChild(chip(n, selGenre===n, "tab", ()=>{ selGenre = n; renderAll(); })));
+  const k = $("#chipsT"); k.innerHTML = "";
+  STATUS.slice(1).forEach(s=>k.appendChild(chip(s, selStatus===s, "pill st", ()=>{ selStatus = selStatus===s ? "전체" : s; renderAll(); })));
+  TAGS.forEach(([n])=>k.appendChild(chip("#"+n, selTags.has(n), "pill", ()=>{ selTags.has(n) ? selTags.delete(n) : selTags.add(n); renderAll(); })));
+}
+function filtering(){ return selGenre!=="전체" || selStatus!=="전체" || selTags.size; }
+function renderHero(){
+  const box = $("#heroBox");
+  const w = WORKS.find(x=>x.open) || WORKS[0];
+  if (!w || filtering()){ box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="hero" style="background-image:url('${w.img}')"><div class="in">
+      <div class="kick">${w.g.join(" · ")} · ${statusOf(w)}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?"첫 화 읽기":"작품 소개 보기"}</button></div></div>`;
+  box.firstChild.onclick = ()=>openSheet(w);
+}
+function renderGrid(){
+  const tags = [...selTags];
+  const list = WORKS.filter(w=>(selGenre==="전체" || w.g.includes(selGenre))
+    && (selStatus==="전체" || statusOf(w)===selStatus)
+    && tags.every(x=>(w.k||[]).includes(x)));
+  const label = [selGenre!=="전체"?selGenre:"", selStatus!=="전체"?selStatus:"", ...tags.map(x=>"#"+x)].filter(Boolean).join(" · ");
+  $("#listTitle").textContent = label ? `${label} (${list.length})` : "전체 작품";
+  $("#resetBtn").classList.toggle("hidden", !filtering());
+  const grid = $("#grid"); grid.innerHTML = "";
+  list.forEach(w=>{
+    const d = document.createElement("div"); d.className = "work";
+    d.innerHTML = coverHtml(w, true) +
+      `<div class="meta"><div class="g">${w.g.join(" · ")}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
+    d.onclick = ()=>openSheet(w);
+    grid.appendChild(d);
+  });
+  const em = $("#empty");
+  if (!list.length){ em.classList.remove("hidden"); em.innerHTML = `이 조건의 작품은 아직 없어요.`; }
+  else em.classList.add("hidden");
+}
+function renderAll(){ renderChips(); renderHero(); renderGrid(); }
+$("#resetBtn").onclick = ()=>{ selGenre = "전체"; selStatus = "전체"; selTags.clear(); renderAll(); };
+
+// 장르 줄: 마우스로 끌어서 좌우로 넘기기 + 휠로 넘기기 (노트북용)
+["#chipsG", "#chipsT"].forEach(sl=>{
+  const el = $(sl); let down=false, moved=false, sx=0, sl0=0;
+  el.addEventListener("mousedown", e=>{ down=true; moved=false; sx=e.pageX; sl0=el.scrollLeft; });
+  window.addEventListener("mousemove", e=>{
+    if(!down) return;
+    const dx = e.pageX - sx;
+    if(Math.abs(dx) > 5){ moved=true; el.classList.add("drag"); }
+    if(moved) el.scrollLeft = sl0 - dx;
+  });
+  window.addEventListener("mouseup", ()=>{ down=false; el.classList.remove("drag"); });
+  el.addEventListener("click", e=>{ if(moved){ e.stopPropagation(); e.preventDefault(); moved=false; } }, true);
+  el.addEventListener("wheel", e=>{ if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){ el.scrollLeft += e.deltaY; e.preventDefault(); } }, {passive:false});
+});
+
+// ---------- 작품 상세 ----------
+function openSheet(w){
+  const s = $("#sheet");
+  s.innerHTML = `<button class="close" id="xBtn">✕</button>${coverHtml(w)}
+    <div class="body">
+    <div class="tg">${w.g.map(x=>`<span>${x}</span>`).join("")}</div>
+    <h4>세계관</h4><p>${w.w}</p>
+    ${w.cast ? `<h4>등장인물</h4>` + w.cast.map(c=>`<p style="margin-bottom:8px"><b>${c[0]}</b><br><span class="sub" style="font-size:13.5px">${c[1]}</span></p>`).join("") : ""}
+    <h4>AI 안내</h4><p>이 작품은 인공지능의 도움으로 만든 허구예요. 실제 인물·단체·사건과 관계없어요.</p>
+    <h4>이렇게 읽어요</h4><p>약 ${TOTAL}화로 끝나는 완결 이야기예요. 처음부터 결말까지 전부 무료로, 머리 식히며 가볍게 읽을 수 있어요.</p>
+    <button class="primary" id="goBtn" ${w.open?"":"disabled"}>${w.open?"1화 읽기":statusOf(w)+"이에요"}</button></div>`;
+  $("#sheetBg").classList.remove("hidden"); s.classList.remove("hidden");
+  $("#xBtn").onclick = closeSheet; $("#sheetBg").onclick = closeSheet;
+  if (w.open) $("#goBtn").onclick = ()=>{ closeSheet(); openStory(w.id); };
+}
+function closeSheet(){
+  $("#sheet").classList.add("hidden"); $("#sheetBg").classList.add("hidden");
+  if (typeof maybeConsent === "function" && !consentDone()) maybeConsent(); // 동의 전에는 약관을 닫으면 동의 창으로 돌아와요
+}
+
+// ---------- 읽기 (미리 만들어 둔 글을 한 번에 보여 줘요) ----------
+let cur = null, path = [], wrappers = [];
+function setBar(){ $("#barFill").style.width = (Math.max(1, path.length)/TOTAL*100)+"%"; }
+
+let fs = 17, serif = false;
+try{ fs = +localStorage.getItem("fs")||17; serif = localStorage.getItem("serif")==="1"; }catch(e){}
+function applyFont(){
+  document.documentElement.style.setProperty("--fs", fs+"px");
+  document.body.classList.toggle("serif", serif);
+  $("#fSerif").textContent = serif ? "고딕" : "명조";
+  try{ localStorage.setItem("fs", fs); localStorage.setItem("serif", serif?"1":"0"); }catch(e){}
+}
+$("#fMinus").onclick = ()=>{ fs = Math.max(14, fs-1); applyFont(); };
+$("#fPlus").onclick = ()=>{ fs = Math.min(24, fs+1); applyFont(); };
+$("#fSerif").onclick = ()=>{ serif = !serif; applyFont(); };
+applyFont();
+
+function showRead(on){
+  $("#readView").classList.toggle("hidden", !on);
+  $("#homeView").classList.toggle("hidden", on);
+  $("#tabs").classList.toggle("hidden", on);
+}
+function openStory(id){
+  cur = STORIES[id]; path = []; wrappers = [];
+  showRead(true);
+  $("#workTitle").textContent = cur.title;
+  $("#chapters").innerHTML = "";
+  $("#choiceBox").classList.add("hidden"); $("#stub").classList.add("hidden");
+  addChapter(cur.first, null);
+  window.scrollTo(0,0);
+}
+function newChapterEl(chId, choiceText){
+  const ch = CH[chId];
+  const wrap = document.createElement("div");
+  wrap.className = "chap";
+  wrap.innerHTML = `<div class="ch-no">${ch.no}화</div><h2 class="ch-title">${ch.title}</h2>
+    <div class="by">${choiceText ? "내 선택 · " + choiceText : ""}</div>
+    <div class="text"></div><hr class="endrule">`;
+  $("#chapters").appendChild(wrap);
+  wrappers.push(wrap);
+  return wrap;
+}
+function addPara(el, t){
+  if (t === "◇"){ const d=document.createElement("div"); d.className="sep"; d.textContent="◇ ◇ ◇"; el.appendChild(d); return; }
+  const p = document.createElement("p"); p.textContent = t; el.appendChild(p);
+}
+function addChapter(chId, choiceText){
+  const wrap = newChapterEl(chId, choiceText);
+  const el = wrap.querySelector(".text");
+  CH[chId].paras.forEach(t=>addPara(el,t));
+  path.push(chId); setBar();
+  if (choiceText) wrap.scrollIntoView({block:"start"});
+  showChoices(chId);
+}
+// 선택지 없이 쭉 읽는 방식: 화 끝에는 "다음 화" 버튼만 나와요.
+// (옛 글에 남아 있는 choices는 첫 번째 줄기만 따라가요)
+function nextOf(chId){
+  const c = CH[chId];
+  if (c.next !== undefined) return c.next;
+  if (c.choices && c.choices.length) return c.choices[0].to || "";
+  return null; // 마지막 화
+}
+function showChoices(chId){
+  $("#choiceBox").classList.add("hidden");
+  const s = $("#stub"); s.classList.remove("hidden");
+  const nx = nextOf(chId), again = ()=>openStory(Object.keys(STORIES).find(k=>STORIES[k]===cur));
+  if (nx === null){
+    s.innerHTML = `<div class="q">끝</div><div class="sub">마지막 화예요. 끝까지 읽어 주셔서 고마워요.</div>
+      <button class="ghost" id="stubRestart">⟲ 처음부터 다시 읽기</button>`;
+    $("#stubRestart").onclick = again;
+  } else if (nx && CH[nx]){
+    s.innerHTML = `<button class="primary" id="nextBtn" style="margin-top:0">다음 화 ›</button>`;
+    $("#nextBtn").onclick = ()=>addChapter(nx, null);
+  } else {
+    s.innerHTML = `<div class="q">다음 화는 준비 중이에요</div><div class="sub">곧 이어서 올라와요.</div>
+      <button class="ghost" id="stubRestart">⟲ 처음부터 다시 읽기</button>`;
+    $("#stubRestart").onclick = again;
+  }
+}
+function go(c){
+  $("#choiceBox").classList.add("hidden");
+  if (c.to && CH[c.to]) addChapter(c.to, c.text);
+  else showStub(c.text);
+}
+function showStub(choiceText){
+  const s = $("#stub"); s.classList.remove("hidden");
+  s.innerHTML = `<div class="q"></div>
+    <div class="sub">이 선택 뒤의 이야기는 아직 쓰지 않았어요. 곧 이어져요.</div>
+    <button class="ghost" id="stubRewind">↩ 이 선택 말고 다른 길 가 보기</button>
+    <button class="ghost" id="stubRestart">⟲ 1화부터 다시 읽기</button>`;
+  s.querySelector(".q").textContent = "“" + choiceText + "”";
+  $("#stubRewind").onclick = ()=>showChoices(path[path.length-1]);
+  $("#stubRestart").onclick = ()=>openStory(Object.keys(STORIES).find(k=>STORIES[k]===cur));
+  s.scrollIntoView({behavior:"smooth", block:"center"});
+}
+function rewind(){
+  if (path.length < 2){ showChoices(path[path.length-1]); return; }
+  const w = wrappers.pop(); if (w) w.remove();
+  path.pop(); setBar();
+  const prevWrap = wrappers[wrappers.length-1];
+  if (prevWrap) prevWrap.scrollIntoView({behavior:"smooth", block:"end"});
+  showChoices(path[path.length-1]);
+}
+$("#rewindBtn").onclick = rewind;
+$("#backBtn").onclick = ()=>{ showRead(false); showTab(lastTab); };
+
+// ---------- 탭 전환 ----------
+let lastTab = "home";
+function showTab(name){
+  lastTab = name;
+  $("#homeView").classList.toggle("hidden", name!=="home");
+  $("#createView").classList.toggle("hidden", name!=="create");
+  $("#settingsView").classList.toggle("hidden", name!=="settings");
+  document.querySelectorAll("nav span[data-tab]").forEach(s=>s.classList.toggle("on", s.dataset.tab===name));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav span[data-tab]").forEach(s=>s.onclick=()=>showTab(s.dataset.tab));
+
+// ---------- 심사 대비: 약관 · 신고 · 첫 실행 동의 · 기록 삭제 ----------
+const CONTACT = "[문의 이메일 — 출시 전에 입력]";
+const OPERATOR = "[운영자 이름 — 출시 전에 입력]";
+function lsGet(k, d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } }
+function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+function openPanel(html, locked){
+  const s = $("#sheet");
+  s.innerHTML = (locked ? "" : `<button class="close" id="xBtn">✕</button>`) + `<div class="body panel">${html}</div>`;
+  $("#sheetBg").classList.remove("hidden"); s.classList.remove("hidden"); s.scrollTop = 0;
+  if (!locked){ $("#xBtn").onclick = closeSheet; $("#sheetBg").onclick = closeSheet; }
+  else { $("#sheetBg").onclick = null; }
+  s.querySelectorAll("[data-doc]").forEach(b=>b.onclick = ()=>openDoc(b.dataset.doc));
+}
+
+const DOCS = {
+ai: { t:"AI 이용 안내", h:`
+  <p>끝까지 무료 웹소설의 이야기는 인공지능(AI)의 도움을 받아 만든 <b>허구</b>예요. 등장하는 인물·단체·사건은 실제와 관계없어요.</p>
+  <h5>알아 두세요</h5>
+  <ul><li>AI가 쓴 글에는 어색한 표현이나 설정 실수가 있을 수 있어요.</li>
+  <li>글은 미리 만들어 둔 것을 보여 주는 방식이에요. 읽는 동안 AI가 글을 새로 만들지 않고, 여러분이 입력한 내용이 AI로 전송되지도 않아요.</li>
+  <li>건강·법률·금융 같은 실제 조언으로 읽지 마세요.</li></ul>
+  <h5>불편한 내용을 봤다면</h5>
+  <p>읽는 화면 위쪽의 "⚑ 신고"를 눌러 주세요. 앱을 나가지 않고 바로 알릴 수 있어요. 신고는 글을 고치거나 내리는 데 쓰여요.</p>`},
+content: { t:"콘텐츠 정책", h:`
+  <p>끝까지 무료 웹소설은 <b>전체 이용가</b> 앱이에요. 아래 내용은 쓰지도, 보여 주지도 않아요.</p>
+  <ul><li>미성년자가 나오는 성적·선정적 내용 (어떤 경우에도 금지)</li>
+  <li>성적인 장면의 노골적 묘사</li>
+  <li>잔인한 폭력·학대·자해·자살을 방법까지 자세히 그리는 내용</li>
+  <li>인종·성별·성적 지향·장애·종교 등을 이유로 한 혐오·차별</li>
+  <li>범죄·마약·무기 제작 등을 따라 할 수 있게 알려 주는 내용</li>
+  <li>실존 인물을 해치거나 속이는 내용, 개인정보</li>
+  <li>다른 사람의 저작물을 그대로 옮긴 글</li></ul>
+  <p>내가 만든 작품도 같은 기준을 지켜야 해요. 어긴 작품은 신고에 따라 내려질 수 있어요.</p>`},
+terms: { t:"이용약관 (초안)", h:`
+  <div class="note">출시 전에 운영자 정보를 채우고 최종 확인이 필요한 초안이에요.</div>
+  <h5>1. 서비스</h5><p>끝까지 무료 웹소설은 AI의 도움으로 쓴 완결 웹소설을 처음부터 끝까지 무료로 읽는 서비스예요. 광고가 표시될 수 있어요.</p>
+  <h5>2. 이용 대상</h5><p>만 14세 이상이 이용할 수 있어요.</p>
+  <h5>3. 이용자가 지킬 일</h5><ul><li>콘텐츠 정책에 어긋나는 글을 만들거나 올리지 않아요.</li><li>서비스를 방해하거나 글을 무단으로 복제·배포하지 않아요.</li></ul>
+  <h5>4. 저작권</h5><p>서비스 안의 글·표지·디자인의 권리는 운영자(${OPERATOR})에게 있어요. 이용자가 직접 쓴 글의 권리는 이용자에게 있어요.</p>
+  <h5>5. 책임의 한계</h5><p>AI가 만든 글은 정확성·완전성을 보장하지 않아요. 서비스는 사전 고지 후 바뀌거나 중단될 수 있어요.</p>
+  <h5>6. 문의</h5><p>${CONTACT}</p>`},
+privacy: { t:"개인정보 처리방침 (초안)", h:`
+  <div class="note">출시 전에 광고·로그인 등 실제 연결한 기능에 맞춰 고치고, 인터넷 주소(웹 페이지)로도 공개해야 해요.</div>
+  <h5>1. 수집하는 정보</h5>
+  <p>현재 버전은 <b>서버로 보내는 개인정보가 없어요.</b> 이름·이메일·전화번호·위치를 묻지 않아요.</p>
+  <h5>2. 이 기기에만 저장하는 정보</h5>
+  <ul><li>글자 크기·서체 등 읽기 설정</li><li>동의 기록, 내가 보낸 신고 내역</li></ul>
+  <p>이 정보는 내 기기 안에만 있고, "내 정보 → 내 기록 모두 삭제"로 언제든 지울 수 있어요.</p>
+  <h5>3. 앞으로 바뀔 수 있는 부분</h5>
+  <ul><li><b>광고:</b> 광고를 붙이면 광고 회사가 광고 식별자(기기의 광고용 번호)를 수집할 수 있어요. 그때 이 방침과 구글 플레이 "데이터 보안" 항목을 먼저 고쳐요.</li>
+  <li><b>로그인·서버:</b> 계정이나 서버 저장을 넣으면 수집 항목, 보관 기간, 계정 삭제 방법을 먼저 알려요.</li></ul>
+  <h5>4. 제3자 제공</h5><p>이용자 정보를 팔거나 광고 목적으로 넘기지 않아요. (광고 도입 시 위 3번 참고)</p>
+  <h5>5. 아동</h5><p>만 14세 미만은 이용할 수 없고, 의도적으로 수집하지 않아요.</p>
+  <h5>6. 문의·삭제 요청</h5><p>${OPERATOR} · ${CONTACT}</p>`},
+ads: { t:"광고 안내", h:`
+  <p>끝까지 무료 웹소설은 인앱결제 없이 <b>광고</b>로 운영하려고 해요. 지금 버전에는 광고가 없어요.</p>
+  <ul><li>광고는 하단 배너와 화 사이에만 넣어요.</li><li>글을 읽는 도중에 화면을 가리거나, 닫기 버튼을 숨기는 광고는 쓰지 않아요.</li><li>어린이 대상 광고나 성인 광고는 막아요.</li></ul>`},
+contact: { t:"문의하기", h:`
+  <p>오류, 불편, 글 삭제 요청은 아래로 알려 주세요.</p><p><b>${CONTACT}</b></p>
+  <p class="sub">글 내용이 문제라면 읽는 화면의 "⚑ 신고"가 더 빨라요.</p>`}
+};
+function openDoc(id){
+  if (id === "report"){ return openReportLog(); }
+  const d = DOCS[id]; if (!d) return;
+  openPanel(`<h3>${d.t}</h3>${d.h}`);
+}
+
+// 신고 (앱을 나가지 않고 접수)
+const REASONS = ["성적이거나 선정적인 내용","잔인한 폭력·자해","혐오·차별 표현","아동·청소년 관련 부적절한 내용","실제 인물·개인정보·저작권 침해","기타 (직접 적기)"];
+function openReport(){
+  const w = cur ? cur.title : "";
+  const ch = path.length ? path[path.length-1] : "";
+  openPanel(`<h3>⚑ 신고하기</h3><p class="sub">어떤 점이 문제인가요? 앱을 나가지 않고 바로 접수돼요.</p>
+    <div style="margin-top:12px">${REASONS.map((r,i)=>`<label class="rsn"><input type="radio" name="rsn" value="${i}"><span>${r}</span></label>`).join("")}</div>
+    <textarea id="rptText" maxlength="500" placeholder="자세한 내용 (선택, 500자까지)" style="min-height:80px"></textarea>
+    <button class="primary" id="rptSend" disabled>신고 보내기</button>`);
+  const send = $("#rptSend");
+  document.querySelectorAll("input[name=rsn]").forEach(i=>i.onchange=()=>send.disabled=false);
+  send.onclick = ()=>{
+    const v = document.querySelector("input[name=rsn]:checked"); if (!v) return;
+    const list = lsGet("reports", []);
+    list.push({ work:w, chapter:ch, reason:REASONS[v.value], detail:$("#rptText").value.trim().slice(0,500), at:new Date().toISOString() });
+    lsSet("reports", list);
+    openPanel(`<h3>신고가 접수됐어요</h3><p>알려 줘서 고마워요. 신고는 글을 고치거나 내리는 데 쓰여요.</p><button class="primary" id="rptDone">확인</button>`);
+    $("#rptDone").onclick = closeSheet;
+  };
+}
+function openReportLog(){
+  const list = lsGet("reports", []);
+  openPanel(`<h3>신고 내역</h3>` + (list.length
+    ? list.slice().reverse().map(r=>`<p><b>${esc(r.work||"(작품 정보 없음)")}</b> · ${esc(r.reason)}<br><span class="sub">${r.at.slice(0,10)}${r.detail?" · "+esc(r.detail):""}</span></p>`).join("")
+    : `<p class="sub">보낸 신고가 없어요.</p>`));
+}
+$("#rptBtn").onclick = openReport;
+
+// 내 정보 화면
+document.querySelectorAll("#settingsView [data-doc], #createView [data-doc]").forEach(b=>b.onclick=()=>openDoc(b.dataset.doc));
+$("#wipeRow").onclick = ()=>{
+  openPanel(`<h3>내 기록 모두 삭제</h3><p>읽기 설정, 신고 내역, 동의 기록이 이 기기에서 지워져요. <b>되돌릴 수 없어요.</b></p>
+    <button class="primary" id="wipeGo" style="background:#e58a8a">모두 삭제</button><button class="ghost" id="wipeNo" style="margin-top:10px">취소</button>`);
+  $("#wipeNo").onclick = closeSheet;
+  $("#wipeGo").onclick = ()=>{ ["myNovels","myBooks","reports","consent_v1","fs","serif"].forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); location.reload(); };
+};
+
+// 첫 실행 동의 (AI 안내 + 약관 + 만 14세)
+let consentMem = false;
+function consentDone(){ return consentMem || lsGet("consent_v1", false); }
+function maybeConsent(){
+  if (consentDone()) return;
+  openPanel(`<h3>끝까지 무료 웹소설에 오신 걸 환영해요</h3>
+    <p>결말까지 처음부터 끝까지 무료로 읽는 웹소설이에요. 시작하기 전에 알려 드려요.</p>
+    <ul><li>이야기는 AI의 도움으로 만든 <b>허구</b>예요.</li><li>불편한 내용은 읽는 화면의 "⚑ 신고"로 바로 알릴 수 있어요.</li><li>이 앱은 전체 이용가를 기준으로 해요.</li></ul>
+    <label class="agree"><input type="checkbox" id="agAge"><span>만 14세 이상이에요.</span></label>
+    <label class="agree"><input type="checkbox" id="agTerms"><span><button class="linkbtn" data-doc="terms">이용약관</button>과 <button class="linkbtn" data-doc="privacy">개인정보 처리방침</button>을 읽었고 동의해요.</span></label>
+    <button class="primary" id="agGo" disabled>시작하기</button>`, true);
+  const chk = ()=>{ $("#agGo").disabled = !($("#agAge").checked && $("#agTerms").checked); };
+  $("#agAge").onchange = chk; $("#agTerms").onchange = chk;
+  $("#agGo").onclick = ()=>{ consentMem = true; lsSet("consent_v1", true); closeSheet(); };
+}
+maybeConsent();
+
+// ---------- 금칙어·위험 내용 검사 (기기 안에서만 동작, 서버로 안 보내요) ----------
+// 한계: 단어 목록은 돌려 쓰기에 약해요. 공개 기능을 열 때는 서버에서 AI 검수를 함께 써야 해요.
+const SEXUAL = ["성관계","섹스","야동","강간","성폭행","성폭력","자위","야설","포르노","난교","윤간","변태짓","발정","성기","젖가슴","알몸"];
+const MINOR  = ["초등학생","중학생","미성년","어린아이","아동","유아","꼬마","로리","쇼타","여중생","여초딩","초딩"];
+const HATE   = ["김치녀","된장녀","한남충","맘충","급식충","틀딱","짱깨","쪽바리","김여사","장애인새끼","병신새끼"];
+const HARM   = ["자살방법","목매는법","손목긋는법","죽는방법","자해방법","약물과다복용방법"];
+const DRUG   = ["마약제조","필로폰제조","폭탄제조","폭탄만드는법","총기제조","독극물만드는법"];
+function normText(s){ return s.toLowerCase().replace(/[\s.\-_,~!?'"*·ㆍ()\[\]{}:;​]+/g,""); }
+function checkText(raw){
+  const block = [], warn = [];
+  const paras = raw.split(/\n+/);
+  let sexHit = null, minorSex = false;
+  for (const p of paras){
+    const n = normText(p);
+    const s = SEXUAL.find(w=>n.includes(w)), m = MINOR.find(w=>n.includes(w));
+    if (s && !sexHit) sexHit = s;
+    if (s && m) minorSex = true;
+  }
+  if (minorSex) block.push("미성년자가 나오는 성적 내용은 어떤 경우에도 쓸 수 없어요.");
+  else if (sexHit) block.push(`노골적인 성적 표현이 있어요. ("${sexHit}") 전체 이용가 앱이라 쓸 수 없어요.`);
+  const n = normText(raw);
+  const h = HATE.find(w=>n.includes(w)); if (h) warn.push(`혐오·비하 표현이 있어요. ("${h}")`);
+  const z = HARM.find(w=>n.includes(w)); if (z) warn.push("자해·자살 방법을 자세히 알려 주는 표현이 있어요.");
+  const d = DRUG.find(w=>n.includes(w)); if (d) warn.push("위험물·마약 제조를 알려 주는 표현이 있어요.");
+  if (/01[016789]-?\d{3,4}-?\d{4}/.test(raw) || /\d{6}-?[1-4]\d{6}/.test(raw) || /[\w.+-]+@[\w-]+\.[\w.]+/.test(raw)) warn.push("전화번호·이메일·주민번호처럼 보이는 개인정보가 있어요.");
+  return { block, warn };
+}
+
+// ---------- 내 웹소설 만들기 (시안: AI 연결 전이라 기획서까지만) ----------
+const LENS = [["짧게 · 8화",8],["보통 · 10화",10],["길게 · 15화",15],["아주 길게 · 20화",20]];
+const ENDS = ["해피엔딩","슬픈 결말","열린 결말","반전 결말","독자가 고르게 (여러 결말)","AI가 정해 줘요"];
+const cg = new Set(); let cLen = 10, cEnd = "독자가 고르게 (여러 결말)";
+const EXAMPLE = "비가 오면 사람이 되는 인어랑 우산 가게 주인. 장마 열흘 동안만 같이 있을 수 있어서, 마지막 날이 슬펐으면 좋겠어요.";
+function chipBtn(label, on, fn){
+  const c = document.createElement("span");
+  c.className = "pill" + (on ? " on" : ""); c.textContent = label; c.onclick = fn; return c;
+}
+function drawCreate(){
+  const g = $("#cGenre"); g.innerHTML = "";
+  [...MAIN,...TAGS].forEach(([n])=>g.appendChild(chipBtn(n, cg.has(n), ()=>{
+    if (cg.has(n)) cg.delete(n); else if (cg.size < 3) cg.add(n); drawCreate();
+  })));
+  const l = $("#cLen"); l.innerHTML = "";
+  LENS.forEach(([t,n])=>l.appendChild(chipBtn(t, cLen===n, ()=>{ cLen=n; drawCreate(); })));
+  const e = $("#cEnd"); e.innerHTML = "";
+  ENDS.forEach(t=>e.appendChild(chipBtn(t, cEnd===t, ()=>{ cEnd=t; drawCreate(); })));
+}
+function loadMine(){ try{ return JSON.parse(localStorage.getItem("myNovels")||"[]"); }catch(e){ return []; } }
+function saveMine(a){ try{ localStorage.setItem("myNovels", JSON.stringify(a)); }catch(e){} }
+function esc(s){ return s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+// ----- 직접 쓰기 -----
+function loadBooks(){ try{ return JSON.parse(localStorage.getItem("myBooks")||"[]"); }catch(e){ return []; } }
+function saveBooks(a){ try{ localStorage.setItem("myBooks", JSON.stringify(a)); }catch(e){} }
+let book = null, bookIdx = -1;
+const mg = new Set();
+function newBook(){ return { id:"b"+Date.now(), title:"", intro:"", g:[], vis:"private", chs:[{title:"",body:"",choices:[]}] }; }
+function drawManual(){
+  $("#mTitle").value = book.title; $("#mIntro").value = book.intro;
+  const g = $("#mGenre"); g.innerHTML = "";
+  [...MAIN,...TAGS].forEach(([n])=>g.appendChild(chipBtn(n, mg.has(n), ()=>{
+    if (mg.has(n)) mg.delete(n); else if (mg.size < 3) mg.add(n); book.g = [...mg]; drawManual();
+  })));
+  const box = $("#mChaps"); box.innerHTML = "";
+  book.chs.forEach((c,i)=>{
+    const d = document.createElement("div"); d.className = "step chapbox";
+    const opts = `<option value="-1">(여기서 끝)</option>` + book.chs.map((x,j)=>`<option value="${j}">${j+1}화${x.title?" · "+esc(x.title):""}</option>`).join("");
+    d.innerHTML = `<h3>${i+1}화 ${i? `<button class="reset" data-rm="${i}" style="float:right">삭제</button>`:""}</h3>
+      <input class="inp" data-f="title" placeholder="${i+1}화 제목" value="${esc(c.title)}" style="margin-bottom:8px">
+      <textarea data-f="body" placeholder="본문을 적어요. 줄바꿈으로 문단이 나뉘어요." style="min-height:180px">${esc(c.body)}</textarea>
+      <div class="sub" style="margin:10px 0 0">화 끝의 선택지 (최대 3개, 비우면 마지막 화)</div>
+      ${[0,1,2].map(k=>{ const ch=c.choices[k]||{text:"",to:-1};
+        return `<div class="row"><input class="inp" data-c="${k}" placeholder="선택지 ${k+1}" value="${esc(ch.text)}"><select data-s="${k}">${opts.replace(`value="${ch.to}"`,`value="${ch.to}" selected`)}</select></div>`; }).join("")}`;
+    d.querySelectorAll("[data-f]").forEach(el=>el.oninput=()=>{ c[el.dataset.f]=el.value; });
+    d.querySelectorAll("[data-c]").forEach(el=>el.oninput=()=>{ const k=+el.dataset.c; c.choices[k]=c.choices[k]||{text:"",to:-1}; c.choices[k].text=el.value; });
+    d.querySelectorAll("[data-s]").forEach(el=>el.onchange=()=>{ const k=+el.dataset.s; c.choices[k]=c.choices[k]||{text:"",to:-1}; c.choices[k].to=+el.value; });
+    const rm = d.querySelector("[data-rm]");
+    if (rm) rm.onclick = ()=>{ book.chs.splice(i,1); book.chs.forEach(x=>x.choices.forEach(ch=>{ if(ch.to===i) ch.to=-1; else if(ch.to>i) ch.to--; })); drawManual(); };
+    box.appendChild(d);
+  });
+}
+function openEditor(b, idx){
+  book = b; bookIdx = idx; mg.clear(); b.g.forEach(x=>mg.add(x));
+  setMode("manual"); drawManual(); window.scrollTo(0,0);
+}
+$("#mTitle").oninput = e=>{ if(book) book.title = e.target.value; };
+$("#mIntro").oninput = e=>{ if(book) book.intro = e.target.value; };
+$("#mAdd").onclick = ()=>{ book.chs.push({title:"",body:"",choices:[]}); drawManual(); };
+function persistBook(){
+  const a = loadBooks();
+  if (bookIdx >= 0) a[bookIdx] = book; else { a.unshift(book); bookIdx = 0; }
+  saveBooks(a); drawMine();
+}
+function readBook(b){
+  const id = "my_"+b.id;
+  b.chs.forEach((c,i)=>{
+    CH[id+"_"+i] = { no:i+1, title:c.title||(i+1)+"화",
+      paras: c.body.split(/\n+/).map(s=>s.trim()).filter(Boolean),
+      choices: (c.choices||[]).filter(x=>x&&x.text.trim()).map(x=>({text:x.text.trim(), to: x.to>=0 ? id+"_"+x.to : null})) };
+  });
+  STORIES[id] = { title:b.title||"제목 없음", first:id+"_0" };
+  openStory(id);
+}
+$("#mSave").onclick = ()=>{
+  if (!book.title.trim() || !book.chs[0].body.trim()){ alert("제목과 1화 본문은 꼭 적어 주세요."); return; }
+  const all = [book.title, book.intro, ...book.chs.flatMap(c=>[c.title, c.body, ...(c.choices||[]).map(x=>x&&x.text||"")])].join("\n");
+  const r = checkText(all);
+  if (r.block.length){ alert("저장할 수 없는 내용이 있어요.\n\n" + r.block.map(x=>"· "+x).join("\n") + "\n\n콘텐츠 정책(내 정보 탭)을 확인하고 고쳐 주세요."); return; }
+  book.vis = "private"; book.flags = r.warn;
+  if (r.warn.length) alert("저장했어요. 다만 아래 내용 때문에 나중에 공개할 수는 없어요.\n\n" + r.warn.map(x=>"· "+x).join("\n"));
+  persistBook(); readBook(book);
+};
+function setMode(m){
+  $("#aiMode").classList.toggle("hidden", m!=="ai"); $("#manualMode").classList.toggle("hidden", m!=="manual");
+  document.querySelectorAll("#seg span").forEach(s=>s.classList.toggle("on", s.dataset.m===m));
+  if (m==="manual" && !book){ book = newBook(); bookIdx = -1; mg.clear(); drawManual(); }
+}
+document.querySelectorAll("#seg span").forEach(s=>s.onclick=()=>setMode(s.dataset.m));
+
+function drawMine(){
+  const a = loadMine(), bs = loadBooks(), box = $("#cMine");
+  if (!a.length && !bs.length){ box.textContent = "아직 없어요."; box.style.padding = "0 18px"; return; }
+  box.style.padding = "0";
+  box.innerHTML = bs.map((x,i)=>`<div class="draft"><b>${esc(x.title||"제목 없음")}</b> <span class="ok">직접 씀 · ${x.chs.length}화</span>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="ghost" data-rd="${i}" style="width:auto;padding:7px 14px">읽기</button>
+    <button class="ghost" data-ed="${i}" style="width:auto;padding:7px 14px">수정</button>
+    <button class="ghost" data-bd="${i}" style="width:auto;padding:7px 14px">지우기</button></div></div>`).join("") + a.map((x,i)=>`<div class="draft"><b>${esc(x.title)}</b> <span class="ok">초안</span>
+    <div class="sub">${x.g.length?esc(x.g.join(" · "))+" · ":""}${x.len}화 · ${esc(x.end)}</div>
+    <div style="margin-top:6px">${esc(x.idea.slice(0,90))}${x.idea.length>90?"…":""}</div>
+    <button class="ghost" data-del="${i}" style="margin-top:10px;padding:7px;width:auto;padding:7px 14px">지우기</button></div>`).join("");
+  box.querySelectorAll("[data-rd]").forEach(b=>b.onclick=()=>readBook(loadBooks()[+b.dataset.rd]));
+  box.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>openEditor(loadBooks()[+b.dataset.ed], +b.dataset.ed));
+  box.querySelectorAll("[data-bd]").forEach(b=>b.onclick=()=>{ if(!confirm("이 작품을 지울까요?")) return; const a=loadBooks(); a.splice(+b.dataset.bd,1); saveBooks(a); if(bookIdx===+b.dataset.bd){book=null;bookIdx=-1;} drawMine(); });
+  box.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ const a=loadMine(); a.splice(+b.dataset.del,1); saveMine(a); drawMine(); });
+}
+$("#cEx").onclick = ()=>{ $("#cIdea").value = EXAMPLE; };
+$("#cMake").onclick = ()=>{
+  const idea = $("#cIdea").value.trim(), out = $("#cResult");
+  if (idea.length < 15){ out.innerHTML = `<div class="draft">조금만 더 적어 주세요. 한두 문장이면 돼요. (지금 ${idea.length}자 · 15자 이상)</div>`; return; }
+  const chk = checkText(idea + "\n" + $("#cTitle").value);
+  if (chk.block.length){ out.innerHTML = `<div class="draft">이 내용으로는 기획서를 만들 수 없어요.<br>${chk.block.map(x=>"· "+esc(x)).join("<br>")}<br><span class="sub">콘텐츠 정책은 "내 정보" 탭에서 볼 수 있어요.</span></div>`; return; }
+  const title = $("#cTitle").value.trim(), gs = [...cg];
+  const first = idea.split(/[.\n!?]/)[0].trim();
+  const a = loadMine(); a.unshift({ title: title || "제목 미정 (AI가 3개 제안)", g: gs, len: cLen, end: cEnd, idea }); saveMine(a);
+  out.innerHTML = `<div class="draft"><div class="ok">✔ 저장했어요. AI가 연결되면 아래 순서로 자동으로 만들어요.</div>
+    <p><b>이렇게 이해했어요</b><br>“${esc(first)}” 를 중심으로, ${gs.length?esc(gs.join(" · ")):"장르는 AI가 판단해서"} ${cLen}화 분량, 결말은 “${esc(cEnd)}”.</p>
+    <p><b>AI가 해 줄 일</b><br>① 제목 3개 제안 ② 세계관·등장인물 정리 ③ 화별 줄거리와 선택지 설계 ④ 전체 본문 쓰기 ⑤ 표지 그림 만들기<br>
+    <span class="sub">그다음 “이대로 좋아요 / 여기 바꿔 주세요”만 고르면 돼요.</span></p></div>`;
+  drawMine(); out.scrollIntoView({behavior:"smooth", block:"center"});
+};
+drawCreate(); drawMine();
+renderAll();
+</script>
+</body>
+</html>
