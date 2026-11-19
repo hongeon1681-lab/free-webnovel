@@ -296,6 +296,14 @@
 <script src="엔딩노벨_자료/stories/dishwasher-8.js"></script>
 <script src="엔딩노벨_자료/stories/dishwasher-9.js"></script>
 <script src="엔딩노벨_자료/stories/dishwasher-10.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-1.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-2.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-3.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-4.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-5.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-6.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-7.js"></script>
+<script src="엔딩노벨_자료/stories/ledger-8.js"></script>
 <script src="엔딩노벨_자료/stories/corpse-1.js"></script>
 <script src="엔딩노벨_자료/stories/corpse-2.js"></script>
 <script src="엔딩노벨_자료/stories/corpse-3.js"></script>
@@ -357,6 +365,12 @@ const WORKS = [
     cast:[["하삼 (22)","취선루 설거지꾼. 물은 손으로 데우고, 접시는 한 손에 열두 장. 본인은 싸움을 못 한다고 믿는다."],
           ["진연화 (19)","취선루 주인. 장부와 주판의 귀신. 하삼에게 넉 달 치 월급이 밀려 있다."],
           ["설유하 (20)","화산파 매화검수. 하삼의 설거지를 전부 무공으로 해석해 수첩에 적는다."]] },
+  { id:"ledger", open:true, done:true, t:"교수형당한 회계관은 장부를 다시 펼친다", main:"판타지", g:["판타지"],
+    k:["회귀","복수","사이다","귀족"],
+    w:"횡령 누명을 쓰고 교수대에 선 변경 백작령의 평민 회계관 루카스. 밧줄이 조여 오는 순간 집사장이 귀에 속삭인다. \"자네 장부는 완벽했지. 그래서 고쳐 쓰기 쉬웠다.\" 눈을 뜨니 감찰관이 오기 30일 전의 회계실이다. 칼 한 번 못 쥐는 회계관이 숫자 하나로 집사장과 이웃 영주, 감찰관까지 상대한다. (전 8화 완결)",
+    cast:[["루카스 벨 (27)","그라첸 백작령 평민 회계관. 장부를 한 번 보면 통째로 외운다. 긴장하면 계단 칸이든 금화든 일단 센다."],
+          ["엘레나 그라첸 (23)","백작의 외동딸이자 후계자. 검을 쓰고 숫자는 질색. \"그래서 결론이 뭔데. 짧게.\""],
+          ["오스발트 크레머 (52)","30년 근속한 집사장. 온화한 노신사, 왼손잡이. 숫자 7에 가로줄을 긋는다."]] },
   { id:"face", open:true, done:true, t:"그녀는 내 얼굴을 모른다", main:"드라마", g:["드라마","로맨스"],
     k:["피폐","사이다","성장","달달"],
     w:"얼굴의 칼자국 때문에 모두가 눈을 피하는 사채 수금원 권도하. 그에게 30일 안에 앞을 못 보는 조율사 한소리의 건물을 빼앗아 오라는 명령이 떨어진다. 그를 무서워하지 않는 사람은, 그의 얼굴을 볼 수 없는 그녀뿐이다. 그런데 그녀는 처음부터 그의 목소리를 알고 있었다. (전 10화 완결)",
@@ -378,7 +392,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { corpse: { title:"시체는 웃지 않는다", first:"corpse-1" }, gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" }, dishwasher: { title:"천하제일 설거지꾼", first:"dishwasher-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { corpse: { title:"시체는 웃지 않는다", first:"corpse-1" }, gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" }, dishwasher: { title:"천하제일 설거지꾼", first:"dishwasher-1" }, ledger: { title:"교수형당한 회계관은 장부를 다시 펼친다", first:"ledger-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
