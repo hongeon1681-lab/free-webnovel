@@ -286,6 +286,16 @@
 <script src="엔딩노벨_자료/stories/face-10.js"></script>
 <script src="엔딩노벨_자료/stories/bodyguard-1.js"></script>
 <script src="엔딩노벨_자료/stories/bodyguard-2.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-1.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-2.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-3.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-4.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-5.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-6.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-7.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-8.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-9.js"></script>
+<script src="엔딩노벨_자료/stories/dishwasher-10.js"></script>
 <script src="엔딩노벨_자료/stories/insu-1.js"></script>
 <script src="엔딩노벨_자료/stories/gunseo-1.js"></script>
 <script>
@@ -325,6 +335,12 @@ const WORKS = [
     cast:[["차무혁 (30)","특수부대 출신 경호원. 동생 수술비 2억을 위해 석 달을 버텨야 한다. 말수 적고, 거짓말은 '업무 외'."],
           ["윤세라 (25)","태성그룹 회장의 막내딸. 도발적이고 맨발로 다니며, 아무도 믿지 않는다. 생일까지 살아남아야 한다."],
           ["강도윤 (35)","태성그룹 전략기획실 이사. 세라와의 약혼을 밀어붙이는 정중한 남자."]] },
+  { id:"dishwasher", open:true, done:true, t:"천하제일 설거지꾼", main:"무협", g:["무협"],
+    k:["착각","먼치킨","개그","사이다","성장"],
+    w:"낙양 나루터 객잔에서 열두 해째 그릇만 닦은 설거지꾼 하삼. 죽은 주방 할아버지에게 배운 '설거지 요령'으로 빚쟁이 깡패를 얼떨결에 눕힌 날, 화산파 여검수가 무릎을 꿇는다. \"일검무이의 전인이시지요?\" 하삼은 대답한다. \"저는 하삼인데요.\" 그 할아버지가 40년 전 천하제일검이었다는 걸, 낙양에서 하삼만 모른다. (전 10화 완결)",
+    cast:[["하삼 (22)","취선루 설거지꾼. 물은 손으로 데우고, 접시는 한 손에 열두 장. 본인은 싸움을 못 한다고 믿는다."],
+          ["진연화 (19)","취선루 주인. 장부와 주판의 귀신. 하삼에게 넉 달 치 월급이 밀려 있다."],
+          ["설유하 (20)","화산파 매화검수. 하삼의 설거지를 전부 무공으로 해석해 수첩에 적는다."]] },
   { id:"face", open:true, done:true, t:"그녀는 내 얼굴을 모른다", main:"드라마", g:["드라마","로맨스"],
     k:["피폐","사이다","성장","달달"],
     w:"얼굴의 칼자국 때문에 모두가 눈을 피하는 사채 수금원 권도하. 그에게 30일 안에 앞을 못 보는 조율사 한소리의 건물을 빼앗아 오라는 명령이 떨어진다. 그를 무서워하지 않는 사람은, 그의 얼굴을 볼 수 없는 그녀뿐이다. 그런데 그녀는 처음부터 그의 목소리를 알고 있었다. (전 10화 완결)",
@@ -346,7 +362,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" }, dishwasher: { title:"천하제일 설거지꾼", first:"dishwasher-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
