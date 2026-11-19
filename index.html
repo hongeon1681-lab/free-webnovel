@@ -296,6 +296,16 @@
 <script src="엔딩노벨_자료/stories/dishwasher-8.js"></script>
 <script src="엔딩노벨_자료/stories/dishwasher-9.js"></script>
 <script src="엔딩노벨_자료/stories/dishwasher-10.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-1.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-2.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-3.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-4.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-5.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-6.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-7.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-8.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-9.js"></script>
+<script src="엔딩노벨_자료/stories/corpse-10.js"></script>
 <script src="엔딩노벨_자료/stories/insu-1.js"></script>
 <script src="엔딩노벨_자료/stories/gunseo-1.js"></script>
 <script>
@@ -335,6 +345,12 @@ const WORKS = [
     cast:[["차무혁 (30)","특수부대 출신 경호원. 동생 수술비 2억을 위해 석 달을 버텨야 한다. 말수 적고, 거짓말은 '업무 외'."],
           ["윤세라 (25)","태성그룹 회장의 막내딸. 도발적이고 맨발로 다니며, 아무도 믿지 않는다. 생일까지 살아남아야 한다."],
           ["강도윤 (35)","태성그룹 전략기획실 이사. 세라와의 약혼을 밀어붙이는 정중한 남자."]] },
+  { id:"corpse", open:true, done:true, t:"시체는 웃지 않는다", main:"미스터리", g:["미스터리"],
+    k:["추리","복수","사이다","성장"],
+    w:"조선 한양, 검시장에서 시신을 씻고 뒤집는 천민 오작인 휘. 양반 검관이 은비녀를 꽂아 보고 '독 없음, 자결'이라 적은 시신이 웃고 있다. 은비녀는 비상밖에 모른다는 걸 아는 사람은 휘뿐이다. 웃는 시신이 한양 곳곳에서 나오고, 열두 해 전 누명을 쓰고 죽은 아버지의 마지막 검안서에도 같은 말이 적혀 있었다. 시신이 웃는다. (사극 수사물, 전 10화 완결)",
+    cast:[["휘 (24)","한성부 천민 오작인. 시신의 손톱·입·목 자국을 읽는다. 양반 앞에선 엎드려 '아뢰옵기 황송하오나'로 진실을 말하다 뺨을 맞는다."],
+          ["단 (22)","포도청 다모. 쇠사슬 철편의 달인, 시신 옆에서도 주먹밥을 먹는다. 휘를 '시체쟁이'라 부른다."],
+          ["조이헌 (27)","한성부 검관. 신주무원록을 줄줄 외우는 거만한 원칙주의자. 은비녀 한 줄로 '자결'을 쓰던 양반."]] },
   { id:"dishwasher", open:true, done:true, t:"천하제일 설거지꾼", main:"무협", g:["무협"],
     k:["착각","먼치킨","개그","사이다","성장"],
     w:"낙양 나루터 객잔에서 열두 해째 그릇만 닦은 설거지꾼 하삼. 죽은 주방 할아버지에게 배운 '설거지 요령'으로 빚쟁이 깡패를 얼떨결에 눕힌 날, 화산파 여검수가 무릎을 꿇는다. \"일검무이의 전인이시지요?\" 하삼은 대답한다. \"저는 하삼인데요.\" 그 할아버지가 40년 전 천하제일검이었다는 걸, 낙양에서 하삼만 모른다. (전 10화 완결)",
@@ -362,7 +378,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" }, dishwasher: { title:"천하제일 설거지꾼", first:"dishwasher-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { corpse: { title:"시체는 웃지 않는다", first:"corpse-1" }, gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" }, dishwasher: { title:"천하제일 설거지꾼", first:"dishwasher-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
