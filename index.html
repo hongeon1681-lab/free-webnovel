@@ -261,6 +261,16 @@
 
 <!-- 글 파일(엔딩노벨_자료/stories/*.js)은 2026-11-18에 모두 지우고 처음부터 다시 시작해요. 새 글은 여기에 script로 연결하세요. -->
 <script src="엔딩노벨_자료/stories/execution-1.js"></script>
+<script src="엔딩노벨_자료/stories/face-1.js"></script>
+<script src="엔딩노벨_자료/stories/face-2.js"></script>
+<script src="엔딩노벨_자료/stories/face-3.js"></script>
+<script src="엔딩노벨_자료/stories/face-4.js"></script>
+<script src="엔딩노벨_자료/stories/face-5.js"></script>
+<script src="엔딩노벨_자료/stories/face-6.js"></script>
+<script src="엔딩노벨_자료/stories/face-7.js"></script>
+<script src="엔딩노벨_자료/stories/face-8.js"></script>
+<script src="엔딩노벨_자료/stories/face-9.js"></script>
+<script src="엔딩노벨_자료/stories/face-10.js"></script>
 <script>
 const TOTAL = 10;
 // 장르 = 네이버 시리즈·카카오페이지 웹소설의 대분류 방식(한 작품에 대표 장르 1개)
@@ -280,6 +290,12 @@ const G = {};
 [...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
 
 const WORKS = [
+  { id:"face", open:true, t:"그녀는 내 얼굴을 모른다", main:"드라마", g:["드라마","로맨스"],
+    k:["피폐","사이다","성장","달달"],
+    w:"얼굴의 칼자국 때문에 모두가 눈을 피하는 사채 수금원 권도하. 그에게 30일 안에 앞을 못 보는 조율사 한소리의 건물을 빼앗아 오라는 명령이 떨어진다. 그를 무서워하지 않는 사람은, 그의 얼굴을 볼 수 없는 그녀뿐이다. 그런데 그녀는 처음부터 그의 목소리를 알고 있었다. (전 10화 완결)",
+    cast:[["권도하 (29)","황금캐피탈 수금원. 모든 걸 돈과 이자로 계산한다. 열두 해째 '넘어졌다'고 거짓말하는 칼자국의 주인."],
+          ["한소리 (26)","두물동 언덕의 피아노 조율사. 열다섯 살에 빛만 남았다. 발소리와 숨소리로 사람을 읽고, 커피는 늘 진하게 탄다."],
+          ["황인철 (63)","황금캐피탈 회장. 녹차를 따르며 '우리 도하'라고 부르는 부드러운 목소리의 남자."]] },
   { id:"execution", open:true, t:"처형인은 공녀를 베지 못했다", main:"판타지", g:["판타지","로판"],
     k:["피폐","귀족","복수","성장"],
     w:"12년 동안 단 한 번도 칼을 두 번 내리친 적 없는 왕국 수석 처형인 아벨. 그에게 열흘 뒤 목을 벨 사형수가 배정된다. 한 달 전 그가 직접 아버지와 오빠의 목을 벤 몰락 공작가의 공녀, 이리스. 그녀는 먹지도 울지도 않고 단 하나만 부탁한다. \"두 번은 싫어요. 한 번에 베어 줘요.\"",
@@ -295,7 +311,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
