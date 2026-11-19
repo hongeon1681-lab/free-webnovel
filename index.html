@@ -286,6 +286,7 @@
 <script src="엔딩노벨_자료/stories/face-10.js"></script>
 <script src="엔딩노벨_자료/stories/bodyguard-1.js"></script>
 <script src="엔딩노벨_자료/stories/bodyguard-2.js"></script>
+<script src="엔딩노벨_자료/stories/insu-1.js"></script>
 <script>
 const TOTAL = 10;
 // 장르 = 네이버 시리즈·카카오페이지 웹소설의 대분류 방식(한 작품에 대표 장르 1개)
@@ -305,6 +306,12 @@ const G = {};
 [...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
 
 const WORKS = [
+  { id:"insu", open:true, done:true, t:"남인수는 오늘 생일이다", main:"로맨스", g:["로맨스"],
+    k:["개그","달달","착각"],
+    w:"스물여섯 번째 생일 아침, 평범한 회사원 남인수의 휴대폰에 여자 여섯 명의 메시지가 동시에 쏟아진다. 소꿉친구, 얼음 여왕 팀장, 카페 바리스타, 톱 아이돌, 재벌 막내딸, 유도 관장. 그가 기억도 못 하는 작은 친절들이 한꺼번에 돌아온 날. (단편 완결)",
+    cast:[["남인수 (26)","식품 회사 마케팅팀 사원. '착해서 재미없다'는 소리를 듣던 남자. 본인만 모른다."],
+          ["한지아 (26)","윗집 소꿉친구. 이십 년째 인수네 반찬을 훔쳐 먹는 중."],
+          ["서예린 (29)","최연소 팀장, 별명 얼음 여왕. 커피는 안 마시면서 매일 아침 카페에 온다."]] },
   { id:"bodyguard", open:true, t:"아홉 번째 경호원은 해고되지 않는다", main:"로맨스", g:["로맨스","드라마"],
     k:["계약관계","사이다","달달","개그"],
     w:"석 달 동안 경호원 여덟 명을 해고한 재벌가 막내딸 윤세라. 아홉 번째 경호원 차무혁은 출근 오 분 만에 그녀에게 키스를 당한다. 계약서 특약 3조, '필요시 연인 역할 수행'. 그런데 그녀가 경호원을 갈아 치운 데는 이유가 있었다. 누군가 경호원을 통해 그녀를 노리고 있었다. (전 10화 예정, 2화까지 공개)",
@@ -332,7 +339,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
