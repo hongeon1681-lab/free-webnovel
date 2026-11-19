@@ -283,6 +283,8 @@
 <script src="엔딩노벨_자료/stories/face-8.js"></script>
 <script src="엔딩노벨_자료/stories/face-9.js"></script>
 <script src="엔딩노벨_자료/stories/face-10.js"></script>
+<script src="엔딩노벨_자료/stories/bodyguard-1.js"></script>
+<script src="엔딩노벨_자료/stories/bodyguard-2.js"></script>
 <script>
 const TOTAL = 10;
 // 장르 = 네이버 시리즈·카카오페이지 웹소설의 대분류 방식(한 작품에 대표 장르 1개)
@@ -302,6 +304,12 @@ const G = {};
 [...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
 
 const WORKS = [
+  { id:"bodyguard", open:true, t:"아홉 번째 경호원은 해고되지 않는다", main:"로맨스", g:["로맨스","드라마"],
+    k:["계약관계","사이다","달달","개그"],
+    w:"석 달 동안 경호원 여덟 명을 해고한 재벌가 막내딸 윤세라. 아홉 번째 경호원 차무혁은 출근 오 분 만에 그녀에게 키스를 당한다. 계약서 특약 3조, '필요시 연인 역할 수행'. 그런데 그녀가 경호원을 갈아 치운 데는 이유가 있었다. 누군가 경호원을 통해 그녀를 노리고 있었다. (전 10화 예정, 2화까지 공개)",
+    cast:[["차무혁 (30)","특수부대 출신 경호원. 동생 수술비 2억을 위해 석 달을 버텨야 한다. 말수 적고, 거짓말은 '업무 외'."],
+          ["윤세라 (25)","태성그룹 회장의 막내딸. 도발적이고 맨발로 다니며, 아무도 믿지 않는다. 생일까지 살아남아야 한다."],
+          ["강도윤 (35)","태성그룹 전략기획실 이사. 세라와의 약혼을 밀어붙이는 정중한 남자."]] },
   { id:"face", open:true, done:true, t:"그녀는 내 얼굴을 모른다", main:"드라마", g:["드라마","로맨스"],
     k:["피폐","사이다","성장","달달"],
     w:"얼굴의 칼자국 때문에 모두가 눈을 피하는 사채 수금원 권도하. 그에게 30일 안에 앞을 못 보는 조율사 한소리의 건물을 빼앗아 오라는 명령이 떨어진다. 그를 무서워하지 않는 사람은, 그의 얼굴을 볼 수 없는 그녀뿐이다. 그런데 그녀는 처음부터 그의 목소리를 알고 있었다. (전 10화 완결)",
@@ -323,7 +331,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
