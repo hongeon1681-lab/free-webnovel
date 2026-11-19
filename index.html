@@ -65,6 +65,17 @@
   .sheet p{margin:0;font-size:14.5px;color:#d6d5cf}
   .sheet .tg{display:flex;gap:6px;flex-wrap:wrap}
   .sheet .tg span{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:1px 10px}
+  .badge.end{background:#8fd19e;left:auto;right:7px}
+  .eplist{margin-top:6px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .ep{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14.5px;color:#e4e3dd}
+  .ep:last-child{border-bottom:none}
+  .ep:active{background:var(--card2)}
+  .ep .n{color:var(--gold);font-weight:700;min-width:30px}
+  .ep .tt{flex:1}
+  .ep .st{font-size:11px;color:var(--sub)}
+  .ep.read .tt{color:#8b8e98}
+  .ep.last{background:rgba(212,175,90,.10)}
+  .ep.last .st{color:var(--gold);font-weight:700}
   .primary{width:100%;margin-top:22px;padding:15px;border-radius:12px;border:none;background:var(--gold);color:#15120a;font-size:16px;font-weight:800;cursor:pointer}
   .primary:disabled{background:var(--card2);color:var(--sub);cursor:default}
   .close{position:absolute;right:12px;top:10px;z-index:2;background:rgba(0,0,0,.45);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer}
@@ -165,6 +176,7 @@
   <div class="rbar">
     <button class="ib" id="backBtn">←</button>
     <div class="t" id="workTitle"></div>
+    <button class="ib" id="listBtn" title="화 목록">☰ 목록</button>
     <button class="ib" id="rptBtn" title="신고하기" aria-label="신고하기">⚑ 신고</button>
     <button class="ib" id="fMinus">가−</button><button class="ib" id="fPlus">가+</button><button class="ib" id="fSerif">명조</button>
   </div>
@@ -290,7 +302,7 @@ const G = {};
 [...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
 
 const WORKS = [
-  { id:"face", open:true, t:"그녀는 내 얼굴을 모른다", main:"드라마", g:["드라마","로맨스"],
+  { id:"face", open:true, done:true, t:"그녀는 내 얼굴을 모른다", main:"드라마", g:["드라마","로맨스"],
     k:["피폐","사이다","성장","달달"],
     w:"얼굴의 칼자국 때문에 모두가 눈을 피하는 사채 수금원 권도하. 그에게 30일 안에 앞을 못 보는 조율사 한소리의 건물을 빼앗아 오라는 명령이 떨어진다. 그를 무서워하지 않는 사람은, 그의 얼굴을 볼 수 없는 그녀뿐이다. 그런데 그녀는 처음부터 그의 목소리를 알고 있었다. (전 10화 완결)",
     cast:[["권도하 (29)","황금캐피탈 수금원. 모든 걸 돈과 이자로 계산한다. 열두 해째 '넘어졌다'고 거짓말하는 칼자국의 주인."],
@@ -322,13 +334,17 @@ function coverStyle(gs){
   const h1 = G[gs[0]].hue, h2 = G[gs[1]||gs[0]].hue;
   return `background:linear-gradient(160deg,hsl(${h1} 38% 26%),hsl(${h2} 34% 13%) 70%,#0b0c10)`;
 }
-function statusOf(w){ return w.open ? "연재 중" : (w.st || "연재 예정"); }
+function statusOf(w){ return w.open ? (w.done ? "완결" : "연재 중") : (w.st || "연재 예정"); }
+function epIds(id){ return Object.keys(CH).filter(k=>k.startsWith(id+"-")).sort((a,b)=>CH[a].no-CH[b].no); }
+function lastRead(id){ return lsGet("prog:"+id, 0); }
+function readSet(id){ return lsGet("read:"+id, []); }
 function coverHtml(w, badge){
   const b = badge && w.open ? `<span class="badge">읽기</span>` : "";
+  const e = w.done ? `<span class="badge end">완결</span>` : "";
   // 표지 파일이 없으면 아래 깔아 둔 색 그라데이션이 그대로 보여요
   const img = w.img ? `linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.8)),url('${w.img}'),` : "";
   const fb = coverStyle(w.g).replace("background:","");
-  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center">${b}<div class="ti">${w.t}</div></div>`;
+  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center">${b}${e}<div class="ti">${w.t}</div></div>`;
 }
 WORKS.forEach(w=>{ w.img = "엔딩노벨_자료/covers/" + w.id + ".png"; });
 
@@ -349,7 +365,7 @@ function renderHero(){
   const w = WORKS.find(x=>x.open) || WORKS[0];
   if (!w || filtering()){ box.innerHTML = ""; return; }
   box.innerHTML = `<div class="hero" style="background-image:url('${w.img}')"><div class="in">
-      <div class="kick">${w.g.join(" · ")}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?"첫 화 읽기":"작품 소개 보기"}</button></div></div>`;
+      <div class="kick">${w.done?"완결 · 전 "+epIds(w.id).length+"화 · ":""}${w.g.join(" · ")}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?(lastRead(w.id)?"이어서 읽기":"첫 화 읽기"):"작품 소개 보기"}</button></div></div>`;
   box.firstChild.onclick = ()=>openSheet(w);
 }
 function renderGrid(){
@@ -363,7 +379,7 @@ function renderGrid(){
   list.forEach(w=>{
     const d = document.createElement("div"); d.className = "work";
     d.innerHTML = coverHtml(w, true) +
-      `<div class="meta"><div class="g">${w.g.join(" · ")}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
+      `<div class="meta"><div class="g">${w.done?"완결 · ":""}${w.g.join(" · ")}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
     d.onclick = ()=>openSheet(w);
     grid.appendChild(d);
   });
@@ -398,11 +414,20 @@ function openSheet(w){
     <h4>세계관</h4><p>${w.w}</p>
     ${w.cast ? `<h4>등장인물</h4>` + w.cast.map(c=>`<p style="margin-bottom:8px"><b>${c[0]}</b><br><span class="sub" style="font-size:13.5px">${c[1]}</span></p>`).join("") : ""}
     <h4>AI 안내</h4><p>이 작품은 인공지능의 도움으로 만든 허구예요. 실제 인물·단체·사건과 관계없어요.</p>
-    <h4>이렇게 읽어요</h4><p>약 ${TOTAL}화로 끝나는 완결 이야기예요. 처음부터 결말까지 전부 무료로, 머리 식히며 가볍게 읽을 수 있어요.</p>
-    <button class="primary" id="goBtn" ${w.open?"":"disabled"}>${w.open?"1화 읽기":"준비 중이에요"}</button></div>`;
+    <h4>회차 ${w.open?`· ${w.done?"완결 ":""}총 ${epIds(w.id).length}화`:""}</h4>
+    ${w.open?`<div class="eplist" id="epList"></div>`:`<p>아직 준비 중이에요.</p>`}
+    <button class="primary" id="goBtn" ${w.open?"":"disabled"}></button></div>`;
   $("#sheetBg").classList.remove("hidden"); s.classList.remove("hidden");
   $("#xBtn").onclick = closeSheet; $("#sheetBg").onclick = closeSheet;
-  if (w.open) $("#goBtn").onclick = ()=>{ closeSheet(); openStory(w.id); };
+  if (w.open){
+    const ids = epIds(w.id), lr = lastRead(w.id), rd = readSet(w.id);
+    const lastId = ids.find(i=>CH[i].no===lr);
+    $("#epList").innerHTML = ids.map(i=>`<div class="ep${rd.includes(CH[i].no)?" read":""}${CH[i].no===lr?" last":""}" data-id="${i}"><span class="n">${CH[i].no}화</span><span class="tt">${CH[i].title}</span><span class="st">${CH[i].no===lr?"읽던 화":(rd.includes(CH[i].no)?"읽음":"")}</span></div>`).join("");
+    $("#epList").querySelectorAll(".ep").forEach(e=>e.onclick=()=>{ closeSheet(); openStory(w.id, e.dataset.id); });
+    const g = $("#goBtn");
+    g.textContent = lastId ? `${lr}화 이어서 읽기` : "1화부터 읽기";
+    g.onclick = ()=>{ closeSheet(); openStory(w.id, lastId || ids[0]); };
+  }
 }
 function closeSheet(){
   $("#sheet").classList.add("hidden"); $("#sheetBg").classList.add("hidden");
@@ -411,7 +436,8 @@ function closeSheet(){
 
 // ---------- 읽기 (미리 만들어 둔 글을 한 번에 보여 줘요) ----------
 let cur = null, path = [], wrappers = [];
-function setBar(){ $("#barFill").style.width = (Math.max(1, path.length)/TOTAL*100)+"%"; }
+let curId = "";
+function setBar(){ const n = path.length ? CH[path[path.length-1]].no : 1; const t = epIds(curId).length || TOTAL; $("#barFill").style.width = (n/t*100)+"%"; }
 
 let fs = 17, serif = false;
 try{ fs = +localStorage.getItem("fs")||17; serif = localStorage.getItem("serif")==="1"; }catch(e){}
@@ -431,13 +457,13 @@ function showRead(on){
   $("#homeView").classList.toggle("hidden", on);
   $("#tabs").classList.toggle("hidden", on);
 }
-function openStory(id){
-  cur = STORIES[id]; path = []; wrappers = [];
+function openStory(id, startCh){
+  cur = STORIES[id]; curId = id; path = []; wrappers = [];
   showRead(true);
   $("#workTitle").textContent = cur.title;
   $("#chapters").innerHTML = "";
   $("#choiceBox").classList.add("hidden"); $("#stub").classList.add("hidden");
-  addChapter(cur.first, null);
+  addChapter(startCh || cur.first, null);
   window.scrollTo(0,0);
 }
 function newChapterEl(chId, choiceText){
@@ -460,6 +486,8 @@ function addChapter(chId, choiceText){
   const el = wrap.querySelector(".text");
   CH[chId].paras.forEach(t=>addPara(el,t));
   path.push(chId); setBar();
+  const no = CH[chId].no; lsSet("prog:"+curId, no);
+  const rd = readSet(curId); if (!rd.includes(no)){ rd.push(no); lsSet("read:"+curId, rd); }
   if (choiceText) wrap.scrollIntoView({block:"start"});
   showChoices(chId);
 }
@@ -474,7 +502,7 @@ function nextOf(chId){
 function showChoices(chId){
   $("#choiceBox").classList.add("hidden");
   const s = $("#stub"); s.classList.remove("hidden");
-  const nx = nextOf(chId), again = ()=>openStory(Object.keys(STORIES).find(k=>STORIES[k]===cur));
+  const nx = nextOf(chId), again = ()=>openStory(curId);
   if (nx === null){
     s.innerHTML = `<div class="q">끝</div><div class="sub">마지막 화예요. 끝까지 읽어 주셔서 고마워요.</div>
       <button class="ghost" id="stubRestart">⟲ 처음부터 다시 읽기</button>`;
@@ -501,7 +529,7 @@ function showStub(choiceText){
     <button class="ghost" id="stubRestart">⟲ 1화부터 다시 읽기</button>`;
   s.querySelector(".q").textContent = "“" + choiceText + "”";
   $("#stubRewind").onclick = ()=>showChoices(path[path.length-1]);
-  $("#stubRestart").onclick = ()=>openStory(Object.keys(STORIES).find(k=>STORIES[k]===cur));
+  $("#stubRestart").onclick = ()=>openStory(curId);
   s.scrollIntoView({behavior:"smooth", block:"center"});
 }
 function rewind(){
@@ -513,7 +541,8 @@ function rewind(){
   showChoices(path[path.length-1]);
 }
 $("#rewindBtn").onclick = rewind;
-$("#backBtn").onclick = ()=>{ showRead(false); showTab(lastTab); };
+$("#listBtn").onclick = ()=>{ const w = WORKS.find(x=>x.id===curId); if (w) openSheet(w); };
+$("#backBtn").onclick = ()=>{ showRead(false); renderAll(); showTab(lastTab); };
 
 // ---------- 탭 전환 ----------
 let lastTab = "home";
