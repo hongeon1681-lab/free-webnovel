@@ -355,7 +355,7 @@ function coverHtml(w, badge){
   // 표지 파일이 없으면 아래 깔아 둔 색 그라데이션이 그대로 보여요
   const img = w.img ? `linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.8)),url('${w.img}'),` : "";
   const fb = coverStyle(w.g).replace("background:","");
-  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center">${b}${e}<div class="ti">${w.t}</div></div>`;
+  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center"><div class="ti">${w.t}</div></div>`;
 }
 WORKS.forEach(w=>{ w.img = "엔딩노벨_자료/covers/" + w.id + ".png"; });
 
@@ -376,7 +376,7 @@ function renderHero(){
   const w = WORKS.find(x=>x.open) || WORKS[0];
   if (!w || filtering()){ box.innerHTML = ""; return; }
   box.innerHTML = `<div class="hero" style="background-image:url('${w.img}')"><div class="in">
-      <div class="kick">${w.done?"완결 · 전 "+epIds(w.id).length+"화 · ":""}${w.g.join(" · ")}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?(lastRead(w.id)?"이어서 읽기":"첫 화 읽기"):"작품 소개 보기"}</button></div></div>`;
+      <div class="kick">${epIds(w.id).length?((w.done?"완결 · 전 ":"총 ")+epIds(w.id).length+"화 · "):""}${w.g.join(" · ")}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?(lastRead(w.id)?"이어서 읽기":"첫 화 읽기"):"작품 소개 보기"}</button></div></div>`;
   box.firstChild.onclick = ()=>openSheet(w);
 }
 function renderGrid(){
@@ -390,7 +390,7 @@ function renderGrid(){
   list.forEach(w=>{
     const d = document.createElement("div"); d.className = "work";
     d.innerHTML = coverHtml(w, true) +
-      `<div class="meta"><div class="tt">${w.t}</div><div class="g">${w.done?"완결 · ":""}${w.g.join(" · ")}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
+      `<div class="meta"><div class="tt">${w.t}</div><div class="g">${w.g.join(" · ")}</div><div class="g">${epIds(w.id).length?((w.done?"완결 · 전 ":"총 ")+epIds(w.id).length+"화"+(w.done?"":" 연재")):"준비 중"}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
     d.onclick = ()=>openSheet(w);
     grid.appendChild(d);
   });
