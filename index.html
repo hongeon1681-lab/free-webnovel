@@ -287,6 +287,7 @@
 <script src="엔딩노벨_자료/stories/bodyguard-1.js"></script>
 <script src="엔딩노벨_자료/stories/bodyguard-2.js"></script>
 <script src="엔딩노벨_자료/stories/insu-1.js"></script>
+<script src="엔딩노벨_자료/stories/gunseo-1.js"></script>
 <script>
 const TOTAL = 10;
 // 장르 = 네이버 시리즈·카카오페이지 웹소설의 대분류 방식(한 작품에 대표 장르 1개)
@@ -306,6 +307,12 @@ const G = {};
 [...MAIN,...TAGS].forEach(g=>G[g[0]]={em:g[1],hue:g[2]});
 
 const WORKS = [
+  { id:"gunseo", open:true, done:true, t:"김건서는 여자친구가 있습니다", main:"로맨스", g:["로맨스"],
+    k:["개그","달달","착각"],
+    w:"지방 국립대 의대 3학년 김건서. 집주인 아주머니들은 반찬 통을 들고 줄을 서고, 선배는 하트 그린 커피를, 후배는 분홍 쪽지를, 학과장 교수님은 딸 사진을 내민다. 그리고 그 모든 걸 하나씩 압수하는, 세 살 어린 여자친구. (단편 완결)",
+    cast:[["김건서 (26)","의대 3학년. 원룸촌의 '국민 사윗감'. 본인은 그냥 착하게 살았을 뿐."],
+          ["서윤 (23)","같은 의대 1학년, 건서의 여자친구. 질투가 나면 일단 압수부터 한다."],
+          ["한소희 (27)","4학년 수석, 별명 메스의 여왕. 커피는 주지만 마음은 '아직' 안 줬다."]] },
   { id:"insu", open:true, done:true, t:"남인수는 오늘 생일이다", main:"로맨스", g:["로맨스"],
     k:["개그","달달","착각"],
     w:"스물여섯 번째 생일 아침, 평범한 회사원 남인수의 휴대폰에 여자 여섯 명의 메시지가 동시에 쏟아진다. 소꿉친구, 얼음 여왕 팀장, 카페 바리스타, 톱 아이돌, 재벌 막내딸, 유도 관장. 그가 기억도 못 하는 작은 친절들이 한꺼번에 돌아온 날. (단편 완결)",
@@ -339,7 +346,7 @@ const WORKS = [
 ];
 
 window.CH = window.CH || {};
-const STORIES = { insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
+const STORIES = { gunseo: { title:"김건서는 여자친구가 있습니다", first:"gunseo-1" }, insu: { title:"남인수는 오늘 생일이다", first:"insu-1" }, bodyguard: { title:"아홉 번째 경호원은 해고되지 않는다", first:"bodyguard-1" }, execution: { title:"처형인은 공녀를 베지 못했다", first:"execution-1" }, face: { title:"그녀는 내 얼굴을 모른다", first:"face-1" } }; // 글을 새로 쓰면 여기에 { 작품id: { title:"제목", first:"첫 화 id" } } 로 연결해요
 
 const $ = s => document.querySelector(s);
 let selGenre = "전체";
