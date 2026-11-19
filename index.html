@@ -34,7 +34,7 @@
   .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,13,17,0) 35%,rgba(12,13,17,.72) 70%,var(--bg))}
   .hero .in{position:absolute;left:18px;right:18px;bottom:20px;z-index:1}
   .hero .kick{font-size:12px;letter-spacing:2px;color:var(--gold2);margin-bottom:6px}
-  .hero h2{font-family:"Noto Sans KR","Malgun Gothic",sans-serif;font-weight:800;font-size:30px;line-height:1.25;margin:0 0 8px;letter-spacing:-.5px}
+  .hero h2{font-family:var(--serif);font-size:30px;line-height:1.25;margin:0 0 8px;letter-spacing:-.5px}
   .hero p{margin:0 0 14px;color:#cfcfc9;font-size:14px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .btn{display:inline-block;background:var(--gold);color:#15120a;border:none;border-radius:999px;padding:11px 24px;font-size:14.5px;font-weight:800;cursor:pointer}
 
@@ -47,9 +47,7 @@
   .work:active{opacity:.8}
   .cover{position:relative;aspect-ratio:3/4;border-radius:7px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:9px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
   .cover.ph{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 6px 18px rgba(0,0,0,.4)}
-  .cover{justify-content:flex-end;text-align:center;padding:10px 8px 12px}
-  .cover .ti{font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-weight:800;font-size:14px;line-height:1.3;letter-spacing:-.4px;color:#fff;position:relative;text-shadow:0 1px 6px rgba(0,0,0,.85)}
-  .cover .ct{font-family:"Noto Sans KR","Malgun Gothic",sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.72);margin-top:3px;position:relative;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+  .cover .ti{font-family:var(--serif);font-weight:700;font-size:14px;line-height:1.3;letter-spacing:-.3px;position:relative;text-shadow:0 2px 8px rgba(0,0,0,.7)}
   .cover.img{background-size:cover;background-position:center}
   .badge{position:absolute;top:7px;left:7px;font-size:10px;font-weight:700;color:#15120a;background:var(--gold);border-radius:4px;padding:1px 6px}
   .meta{padding:8px 1px 0}
@@ -355,7 +353,7 @@ function coverHtml(w, badge){
   // 표지 파일이 없으면 아래 깔아 둔 색 그라데이션이 그대로 보여요
   const img = w.img ? `linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.8)),url('${w.img}'),` : "";
   const fb = coverStyle(w.g).replace("background:","");
-  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center"><div class="ti">${w.t}</div><div class="ct">${epIds(w.id).length?((w.done?"완결 · 전 ":"총 ")+epIds(w.id).length+"화"):"준비 중"}</div></div>`;
+  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center"><div class="ti">${w.t}</div></div>`;
 }
 WORKS.forEach(w=>{ w.img = "엔딩노벨_자료/covers/" + w.id + ".png"; });
 
@@ -390,7 +388,7 @@ function renderGrid(){
   list.forEach(w=>{
     const d = document.createElement("div"); d.className = "work";
     d.innerHTML = coverHtml(w, true) +
-      `<div class="meta"><div class="g">${w.g.join(" · ")}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
+      `<div class="meta"><div class="g">${w.g.join(" · ")}</div><div class="g">${epIds(w.id).length?((w.done?"완결 · 전 ":"총 ")+epIds(w.id).length+"화"):"준비 중"}</div><div class="s">${(w.k||[]).slice(0,3).map(x=>"#"+x).join(" ")}</div></div>`;
     d.onclick = ()=>openSheet(w);
     grid.appendChild(d);
   });
