@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>끝까지 무료 웹소설</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Song+Myung&family=Jua&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#0c0d11;--card:#15171d;--card2:#1c1f27;--text:#ecebe6;--sub:#8d909a;--line:#23262f;--gold:#c9a96e;--gold2:#e2c88f;
         --serif:"Noto Serif KR","Nanum Myeongjo","Batang","Times New Roman",serif;--sans:system-ui,"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
@@ -49,6 +50,19 @@
   .cover.ph{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 6px 18px rgba(0,0,0,.4)}
   .cover .ti{font-family:var(--serif);font-weight:700;font-size:14px;line-height:1.3;letter-spacing:-.3px;position:relative;text-shadow:0 2px 8px rgba(0,0,0,.7)}
   .cover.img{background-size:cover;background-position:center}
+  /* 작품마다 다른 제목 글씨 (표지 그림에 맞춰) */
+  .cover .ti,.hero h2{transition:none}
+  .t-bodyguard .ti,.hero.t-bodyguard h2{font-family:"Black Han Sans","Do Hyeon",sans-serif;font-weight:400;color:#f3d9a4;letter-spacing:1px;text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 18px rgba(255,190,90,.35)}
+  .cover.t-bodyguard{justify-content:flex-start;padding-top:12px}
+  .cover.t-bodyguard .ti{text-align:center;font-size:15px}
+  .t-face .ti,.hero.t-face h2{font-family:"Song Myung","Nanum Myeongjo",serif;font-weight:400;color:#ffe9cf;letter-spacing:-.5px;text-shadow:0 2px 10px rgba(30,15,5,.9)}
+  .cover.t-face{justify-content:center;align-items:flex-end;text-align:right}
+  .cover.t-face .ti{font-size:17px;max-width:75%}
+  .t-execution .ti,.hero.t-execution h2{font-family:"Nanum Myeongjo",serif;font-weight:800;color:#d8dde6;letter-spacing:4px;text-shadow:0 2px 12px #000}
+  .cover.t-execution{justify-content:flex-start;align-items:center;padding-top:12px}
+  .cover.t-execution .ti{text-align:center;font-size:12px;line-height:1.5}
+  .t-funeral .ti,.hero.t-funeral h2{font-family:"Jua",sans-serif;font-weight:400;color:#ffe3ee;letter-spacing:0;text-shadow:0 2px 0 #7a2145,0 3px 10px rgba(0,0,0,.6)}
+  .cover.t-funeral .ti{transform:rotate(-3deg);font-size:15px}
   .badge{position:absolute;top:7px;left:7px;font-size:10px;font-weight:700;color:#15120a;background:var(--gold);border-radius:4px;padding:1px 6px}
   .meta{padding:8px 1px 0}
   .meta .g{font-size:11.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -352,7 +366,7 @@ function coverHtml(w, badge){
   // 표지 파일이 없으면 아래 깔아 둔 색 그라데이션이 그대로 보여요
   const img = w.img ? `linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.8)),url('${w.img}'),` : "";
   const fb = coverStyle(w.g).replace("background:","");
-  return `<div class="cover img" style="background:${img}${fb};background-size:cover;background-position:center">${b}${e}<div class="ti">${w.t}</div></div>`;
+  return `<div class="cover img t-${w.id}" style="background:${img}${fb};background-size:cover;background-position:center">${b}${e}<div class="ti">${w.t}</div></div>`;
 }
 WORKS.forEach(w=>{ w.img = "엔딩노벨_자료/covers/" + w.id + ".png"; });
 
@@ -372,7 +386,7 @@ function renderHero(){
   const box = $("#heroBox");
   const w = WORKS.find(x=>x.open) || WORKS[0];
   if (!w || filtering()){ box.innerHTML = ""; return; }
-  box.innerHTML = `<div class="hero" style="background-image:url('${w.img}')"><div class="in">
+  box.innerHTML = `<div class="hero t-${w.id}" style="background-image:url('${w.img}')"><div class="in">
       <div class="kick">${w.done?"완결 · 전 "+epIds(w.id).length+"화 · ":""}${w.g.join(" · ")}</div><h2>${w.t}</h2><p>${w.w}</p><button class="btn">${w.open?(lastRead(w.id)?"이어서 읽기":"첫 화 읽기"):"작품 소개 보기"}</button></div></div>`;
   box.firstChild.onclick = ()=>openSheet(w);
 }
